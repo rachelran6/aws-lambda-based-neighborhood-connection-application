@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 70%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 10;
+        padding: 10;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+        events = [
+            {
+                'address': '215 Queen St W Toronto ON M5V1Z4'
+            },
+            {
+                'address': '40 St Joseph StToronto, ON M4Y1J9'
+            }
+        ]
+        markEventOnMap = (geocoder, map, address) => {
+            geocoder.geocode({'address': address}, function(results, status) {
+            if (status === 'OK') {
+                map.setCenter(results[0].geometry.location);
+                var marker = new google.maps.Marker({
+                map: map,
+                position: results[0].geometry.location
+                });
+            } else {
+                alert('Geocode was not successful for the following reason: ' + status);
+            }
+            });
+        }
+        function initMap() {
+            var map = new google.maps.Map(document.getElementById('map'), {
+                center: {lat: -34.397, lng: 150.644},
+                zoom: 12
+            });
+            geocoder = new google.maps.Geocoder();
+            for (var i = 0; i < 2; i += 1) {
+                markEventOnMap(geocoder, map, events[i]['address'])
+            }
+            
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDbhbcq9vDMMwwl2LG7DE5PQK5Os-hbgSw&callback=initMap"
+    async defer></script>
+  </body>
+</html>
