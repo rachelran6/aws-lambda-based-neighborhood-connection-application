@@ -5,6 +5,10 @@
     <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8">
     <link rel="shortcut icon" type="image/png" href="favicon_io/favicon-32x32.png"/>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <style>
       /* Always set the map height explicitly to define the size of the div
        * element that contains the map. */
@@ -17,10 +21,71 @@
         margin: 10;
         padding: 10;
       }
+      * {
+        box-sizing: border-box;
+      }
+
+      #myInput {
+        background-image: url('/css/searchicon.png');
+        background-position: 10px 10px;
+        background-repeat: no-repeat;
+        width: 100%;
+        font-size: 16px;
+        padding: 12px 20px 12px 40px;
+        border: 1px solid #ddd;
+        margin-bottom: 12px;
+      }
+
+      #myTable {
+        border-collapse: collapse;
+        width: 100%;
+        border: 1px solid #ddd;
+        font-size: 18px;
+      }
+
+      #myTable th, #myTable td {
+        text-align: left;
+        padding: 12px;
+      }
+
+      #myTable tr {
+        border-bottom: 1px solid #ddd;
+      }
+
+      #myTable tr.header, #myTable tr:hover {
+        background-color: #f1f1f1;
+      }
     </style>
   </head>
   <body>
     <div id="map"></div>
+    <input class="form-control" id="myInput" type="text" placeholder="Search..">
+  <br>
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Location</th>
+        <th>Time</th>
+        <th>Host</th>
+      </tr>
+    </thead>
+    <tbody id="myTable">
+      <tr>
+        <td>do something</td>
+        <td>215 Queen St W Toronto ON M5V1Z4</td>
+        <td>April 1st 2:30pm ETS</td>
+        <td>Eric</td>
+      </tr>
+      <tr>
+        <td>do something else</td>
+        <td>40 St Joseph StToronto, ON M4Y1J9</td>
+        <td>April 1st 2:30pm ETS</td>
+        <td>Eric</td>
+      </tr>
+    </tbody>
+  </table>
+
     <script>
         events = [
             {
@@ -87,6 +152,35 @@
               markEventOnMap(geocoder, map, events[i]['address'])
           }
         }
+
+        function myFunction() {
+          var input, filter, table, tr, td, i, txtValue;
+          input = document.getElementById("myInput");
+          filter = input.value.toUpperCase();
+          table = document.getElementById("myTable");
+          tr = table.getElementsByTagName("tr");
+          for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[0];
+            if (td) {
+              txtValue = td.textContent || td.innerText;
+              if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+              } else {
+                tr[i].style.display = "none";
+              }
+            }       
+          }
+        }
+      $(document).ready(function(){
+        $("#myInput").on("keyup", function() {
+          var value = $(this).val().toLowerCase();
+          $("#myTable tr").filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+          });
+        });
+      });
+
+
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDbhbcq9vDMMwwl2LG7DE5PQK5Os-hbgSw&callback=initMap"
     async defer></script>
