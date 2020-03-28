@@ -5,7 +5,6 @@ from boto3.dynamodb.conditions import Attr, Key
 from flask import (Blueprint, flash, redirect, render_template, request,
                    session, url_for)
 
-from app import webapp
 
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 bp = Blueprint("events", __name__, url_prefix='/events')
