@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Neighboor</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link rel="shortcut icon" type="image/png" href="favicon_io/favicon-32x32.png"/>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script type="scripts/events."></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDbhbcq9vDMMwwl2LG7DE5PQK5Os-hbgSw&callback=initMap"
+    async defer></script>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 70%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 10;
+        padding: 10;
+      }
+      * {
+        box-sizing: border-box;
+      }
+
+      #myInput {
+        background-image: url('/css/searchicon.png');
+        background-position: 10px 10px;
+        background-repeat: no-repeat;
+        width: 100%;
+        font-size: 16px;
+        padding: 12px 20px 12px 40px;
+        border: 1px solid #ddd;
+        margin-bottom: 12px;
+      }
+
+      #myTable {
+        border-collapse: collapse;
+        width: 80%;
+        border: 1px solid #ddd;
+        font-size: 18px;
+      }
+
+      #myTable th, #myTable td {
+        text-align: left;
+        padding: 12px;
+      }
+
+      #myTable tr {
+        border-bottom: 1px solid #ddd;
+      }
+
+      #myTable tr.header, #myTable tr:hover {
+        background-color: #f1f1f1;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <br>
+    
+    <div class="container-fluid col-6 myTable">
+      <input class="form-control" id="myInput" type="text" placeholder="Search..">
+      <table id='eventTable' class="table table-bordered table-striped">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Location</th>
+            <th>Time</th>
+            <th>Host</th>
+          </tr>
+        </thead>
+        <tbody id="myTable">
+        </tbody>
+      </table>
+    </div>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@fat">Create Event</button>
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">New event</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="form-group">
+                <label for="recipient-name" class="col-form-label">Title:</label>
+                <input type="text" class="form-control" id="recipient-name">
+              </div>
+              <div class="form-group">
+                <label for="message-text" class="col-form-label">Location:</label>
+                <textarea class="form-control" id="message-text"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="message-text" class="col-form-label">Time:</label>
+                <textarea class="form-control" id="message-text"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="message-text" class="col-form-label">Participants Required:</label>
+                <textarea class="form-control" id="message-text"></textarea>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Send message</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+
+    <script>
+      events = [
+          {   'title': 'do something 1234',
+              'address': '215 Queen St W Toronto ON M5V1Z4',
+              'time': 'April 1 1234',
+              'host': 'eric'
+          },
+          {   'title': 'do something 456',
+              'address': '40 St Joseph StToronto, ON M4Y1J9',
+              'time': 'April 1 1234',
+              'host': 'eric'
+          }
+      ]
+      function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+        infoWindow.setPosition(pos);
+        infoWindow.setContent(browserHasGeolocation ?
+                              'Error: The Geolocation service failed.' :
+                              'Error: Your browser doesn\'t support geolocation.');
+        infoWindow.open(map);
+      }
+      markEventOnMap = (geocoder, map, address) => {
+          geocoder.geocode({'address': address}, function(results, status) {
+          if (status === 'OK') {
+              map.setCenter(results[0].geometry.location);
+              var marker = new google.maps.Marker({
+              map: map,
+              position: results[0].geometry.location
+              });
+          } else {
+              alert('Geocode was not successful for the following reason: ' + status);
+          }
+          });
+      }
+      var map, infoWindow;
+      var im = 'http://www.robotwoods.com/dev/misc/bluecircle.png';
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: {lat: -34.397, lng: 150.644},
+            zoom: 12
+        });
+        infoWindow = new google.maps.InfoWindow;
+        // Try HTML5 geolocation.
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var pos = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+            var userMarker = new google.maps.Marker({
+                position: pos,
+                map: map,
+                icon: im
+            });
+            infoWindow.setPosition(pos);
+            map.setCenter(pos);
+          }, function() {
+            handleLocationError(true, infoWindow, map.getCenter());
+          });
+        } else {
+          handleLocationError(false, infoWindow, map.getCenter());
+        }
+        geocoder = new google.maps.Geocoder();
+        for (var i = 0; i < 2; i += 1) {
+            markEventOnMap(geocoder, map, events[i]['address'])
+        }
+      }
+
+      loadEventTable = (events) => {
+          for (var i =0; i < events.length; i += 1) {
+              $("#eventTable > tbody").append('<tr>'+
+                                              '<td>' + events[i]['title'] + '</td>' + 
+                                              '<td>' + events[i]['address'] + '</td>' + 
+                                              '<td>' + events[i]['time'] + '</td>' + 
+                                              '<td>' + events[i]['host'] + '</td>' + 
+                                              + '</tr>')
+          }
+      }
+
+      joinEvent = () => {
+        //TODO: join event back end
+      }
+
+      createEvent = () => {
+        //TODO: post event to back end
+      }
+
+      $(document).ready(function(){
+        loadEventTable(events)
+        $("#myInput").on("keyup", function() {
+          var value = $(this).val().toLowerCase();
+          $("#myTable tr").filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+          });
+        });
+      });
+
+
+
+    </script>
+</html>
