@@ -12,6 +12,7 @@
     <script type="scripts/events."></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDbhbcq9vDMMwwl2LG7DE5PQK5Os-hbgSw&callback=initMap"
     async defer></script>
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
   </head>
   <body>
     <div id="map"></div>
@@ -23,6 +24,7 @@
         <thead>
           <tr>
             <th>Title</th>
+            <th>Type</th>
             <th>Location</th>
             <th>Time</th>
             <th>Host</th>
@@ -32,12 +34,12 @@
         </tbody>
       </table>
     </div>
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@fat">Create Event</button>
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createEventModal" data-whatever="@fat">Create Event</button>
+    <div class="modal fade" id="createEventModal" tabindex="-1" role="dialog" aria-labelledby="createEventModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">New event</h5>
+            <h5 class="modal-title" id="createEventModalLabel">New event</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -46,19 +48,34 @@
             <form>
               <div class="form-group">
                 <label for="recipient-name" class="col-form-label">Title:</label>
-                <input type="text" class="form-control" id="recipient-name">
+                <input type="text" class="form-control" name="tile">
+              </div>
+              <div>
+                <label for="cars">Choose a car:</label>
+                  <select id="cars" name="event-type">
+                  <option value="volvo">sports</option>
+                  <option value="saab">entertainment</option>
+                  <option value="fiat">carpool</option>
+                  <option value="fiat">meal</option>
+                  <option value="audi">other</option>
+                </select>
               </div>
               <div class="form-group">
                 <label for="message-text" class="col-form-label">Location:</label>
-                <input class="form-control" id="message-text">
+                <input class="form-control" name="address">
+              </div>
+
+              <div class="form-group">
+                <label for="birthdaytime">time:</label>
+                <input type="datetime-local" name="start-time">
               </div>
               <div class="form-group">
                 <label for="birthdaytime">time:</label>
-                <input type="datetime-local" id="birthdaytime" name="birthdaytime">
+                <input type="datetime-local" name="end-time">
               </div>
               <div class="form-group">
                 <label for="message-text" class="col-form-label">Participants Required:</label>
-                <input class="form-control" id="message-text">
+                <input class="form-control" name="participants_numbers">
               </div>
             </form>
           </div>
@@ -75,11 +92,13 @@
       events = [
           {   'title': 'do something 1234',
               'address': '215 Queen St W Toronto ON M5V1Z4',
+              'event-type': 'entertainment',
               'time': 'April 1 1234',
               'host': 'eric'
           },
           {   'title': 'do something 456',
               'address': '40 St Joseph StToronto, ON M4Y1J9',
+              'event-type': 'entertainment',
               'time': 'April 1 1234',
               'host': 'eric'
           }
@@ -142,12 +161,15 @@
           for (var i =0; i < events.length; i += 1) {
               $("#eventTable > tbody").append('<tr>'+
                                               '<td>' + events[i]['title'] + '</td>' + 
+                                              '<td>' + events[i]['event-type'] + '</td>' + 
                                               '<td>' + events[i]['address'] + '</td>' + 
                                               '<td>' + events[i]['time'] + '</td>' + 
                                               '<td>' + events[i]['host'] + '</td>' + 
                                               + '</tr>')
           }
       }
+
+      
 
       joinEvent = () => {
         //TODO: join event back end
