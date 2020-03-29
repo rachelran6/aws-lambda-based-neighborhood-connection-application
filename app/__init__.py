@@ -1,13 +1,14 @@
 from flask import Flask, render_template
-from flask_dynamo import Dynamo
 
 from app import auth, events, users
+from datetime import datetime
 import boto3
 # from apscheduler.schedulers.background import BackgroundScheduler
 
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 dynamodb_client = boto3.client('dynamodb', region_name='us-east-1')
 # scheduler = BackgroundScheduler()
+
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
@@ -48,8 +49,45 @@ def create_app(test_config=None):
             }
         )
     update_table()
+    @app.route('/', methods=['GET'])
+    def index():
+        return render_template('index.html')
 
+    @app.route('/profile', methods=['GET'])
+    def profile():
+        profile = {
+            'username': 'maxxx580',
+            'self': True,
+            'joined_events': [{
+                'title': 'event title 1',
+                'address': '215 queen',
+                'start_time': datetime.utcnow(),
+                'end_time': '123345667',
+                'rating': '4'
+            }],
+            'hosted_events': [{
+                'title': 'event title 2',
+                'address': '225 queen',
+                'start_time': datetime.utcnow(),
+                'end_time': '123345667',
+                'rating': '4'
+            }],
+            'messages': [
+                {
+                    'from': 'user 1',
+                    'time': datetime.utcnow(),
+                    'text': 'message 1'
+                },
+                {
+                    'from': 'user 2',
+                    'time': datetime.utcnow(),
+                    'text': 'message 2'
+                }
+            ]
+        }
+        return render_template('profile.html', profile=profile)
     return app
+
 
 def update_table():
     try:
@@ -94,8 +132,3 @@ def update_table():
     except Exception as e:
         print("Error updating table:")
         print(e)
-
-
-# @app.route('/', methods=['GET'])
-# def index():
-#     return render_template('index.html')
