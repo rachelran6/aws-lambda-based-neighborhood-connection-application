@@ -27,7 +27,7 @@ def create_app(test_config=None):
                     'KeyType': 'HASH'  # Partition key
                 },
                 {
-                    'AttributeName': 'date',
+                    'AttributeName': 'start_time',
                     'KeyType': 'RANGE'  # Sort key
                 }
             ],
@@ -37,7 +37,7 @@ def create_app(test_config=None):
                     'AttributeType': 'S'
                 },
                 {
-                    'AttributeName': 'date',
+                    'AttributeName': 'start_time',
                     'AttributeType': 'N'
                 },
 
