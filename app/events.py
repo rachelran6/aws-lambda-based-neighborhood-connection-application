@@ -27,13 +27,11 @@ def events():
                 'address': 'st george',
                 'is_active': 1,
                 'item_type': 'host',
-                'end_time': 1585492294, #seconds
+                'end_time': 1585492294,  # seconds
                 'event_type': "sports",
             }
         )
-        return response
-
-    # flash('Registration Success! Please login.', 'success')
+    return response
 
 
 @bp.route('/join', methods=['POST'])
@@ -49,7 +47,7 @@ def join_event():
 
         if response["Items"]:
             for i in response["Items"]:
-                if end_time<i["start_time"] or start_time>i["end_time"]:
+                if end_time < i["start_time"] or start_time > i["end_time"]:
                     pass
                 else:
                     return "Your events have conflicts"
@@ -58,12 +56,11 @@ def join_event():
             Item={
                 'username': 'sara',
                 'start_time': 1585462294,
-                'end_time': 1585492294,# current timestamp
+                'end_time': 1585492294,  # current timestamp
                 'title': 'tennis',
                 'item_type': 'participant',
             })
         return "participants added to event"
-
 
 
 @bp.route('/rate', methods=['POST'])
@@ -75,12 +72,13 @@ def rate_event():
         },
         UpdateExpression="SET stars= :var1",
         ExpressionAttributeValues={
-                ':var1': 1
-                },
+            ':var1': 1
+        },
         ReturnValues="UPDATED_NEW"
 
-            )
+    )
     return 'rate events'
+
 
 @bp.route('/dropout', methods=['DELETE'])
 def dropout_event():
