@@ -1,10 +1,6 @@
 # import logging
-from app import create_app
+from app import webapp
 
-
-app = create_app()
-
-# logging.basicConfig(filename='request.log', level=logging.CRITICAL)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    webapp.run(debug=True)

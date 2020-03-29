@@ -55,7 +55,7 @@
     $(document).ready(() => {
         $('#registerForm')
             .ajaxForm({
-                url : "register",
+                url : "auth/register",
                 dataType : "json",
                 type: "POST",
                 success : function (response) {

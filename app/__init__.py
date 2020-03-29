@@ -10,85 +10,6 @@ dynamodb_client = boto3.client('dynamodb', region_name='us-east-1')
 # scheduler = BackgroundScheduler()
 
 
-def create_app(test_config=None):
-    app = Flask(__name__, instance_relative_config=True)
-
-    app.register_blueprint(auth.bp)
-    app.register_blueprint(events.bp)
-    app.register_blueprint(users.bp)
-
-    table_name = 'Events'
-    table_names = [table.name for table in dynamodb.tables.all()]
-    if table_name not in table_names:
-        response = dynamodb.create_table(
-            TableName='Events',
-            KeySchema=[
-                {
-                    'AttributeName': 'username',
-                    'KeyType': 'HASH'  # Partition key
-                },
-                {
-                    'AttributeName': 'start_time',
-                    'KeyType': 'RANGE'  # Sort key
-                }
-            ],
-            AttributeDefinitions=[
-                {
-                    'AttributeName': 'username',
-                    'AttributeType': 'S'
-                },
-                {
-                    'AttributeName': 'start_time',
-                    'AttributeType': 'N'
-                },
-
-            ],
-            ProvisionedThroughput={
-                'ReadCapacityUnits': 5,
-                'WriteCapacityUnits': 5
-            }
-        )
-    update_table()
-    @app.route('/', methods=['GET'])
-    def index():
-        return render_template('index.html')
-
-    @app.route('/profile', methods=['GET'])
-    def profile():
-        profile = {
-            'username': 'maxxx580',
-            'self': True,
-            'joined_events': [{
-                'title': 'event title 1',
-                'address': '215 queen',
-                'start_time': datetime.utcnow(),
-                'end_time': '123345667',
-                'rating': '4'
-            }],
-            'hosted_events': [{
-                'title': 'event title 2',
-                'address': '225 queen',
-                'start_time': datetime.utcnow(),
-                'end_time': '123345667',
-                'rating': '4'
-            }],
-            'messages': [
-                {
-                    'from': 'user 1',
-                    'time': datetime.utcnow(),
-                    'text': 'message 1'
-                },
-                {
-                    'from': 'user 2',
-                    'time': datetime.utcnow(),
-                    'text': 'message 2'
-                }
-            ]
-        }
-        return render_template('profile.html', profile=profile)
-    return app
-
-
 def update_table():
     try:
         resp = dynamodb_client.update_table(
@@ -132,3 +53,83 @@ def update_table():
     except Exception as e:
         print("Error updating table:")
         print(e)
+
+
+webapp = Flask(__name__, instance_relative_config=True)
+
+webapp.register_blueprint(auth.bp)
+webapp.register_blueprint(events.bp)
+webapp.register_blueprint(users.bp)
+
+table_name = 'Events'
+table_names = [table.name for table in dynamodb.tables.all()]
+if table_name not in table_names:
+    response = dynamodb.create_table(
+        TableName='Events',
+        KeySchema=[
+            {
+                'AttributeName': 'username',
+                'KeyType': 'HASH'  # Partition key
+            },
+            {
+                'AttributeName': 'start_time',
+                'KeyType': 'RANGE'  # Sort key
+            }
+        ],
+        AttributeDefinitions=[
+            {
+                'AttributeName': 'username',
+                'AttributeType': 'S'
+            },
+            {
+                'AttributeName': 'start_time',
+                'AttributeType': 'N'
+            },
+
+        ],
+        ProvisionedThroughput={
+            'ReadCapacityUnits': 5,
+            'WriteCapacityUnits': 5
+        }
+    )
+update_table()
+
+
+@webapp.route('/', methods=['GET'])
+def index():
+    return render_template('index.html')
+
+
+@webapp.route('/profile', methods=['GET'])
+def profile():
+    profile = {
+        'username': 'maxxx580',
+        'self': True,
+        'joined_events': [{
+            'title': 'event title 1',
+            'address': '215 queen',
+            'start_time': datetime.utcnow(),
+            'end_time': '123345667',
+            'rating': '4'
+        }],
+        'hosted_events': [{
+            'title': 'event title 2',
+            'address': '225 queen',
+            'start_time': datetime.utcnow(),
+            'end_time': '123345667',
+            'rating': '4'
+        }],
+        'messages': [
+            {
+                'from': 'user 1',
+                'time': datetime.utcnow(),
+                'text': 'message 1'
+            },
+            {
+                'from': 'user 2',
+                'time': datetime.utcnow(),
+                'text': 'message 2'
+            }
+        ]
+    }
+    return render_template('profile.html', profile=profile)
