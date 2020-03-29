@@ -17,19 +17,15 @@ def login():
         password = 'password'
 
         response = table.query(
-            # TODO: add password check
-            # ProjectionExpression="#yr, title, info.genres, info.actors[0]",
-            # ExpressionAttributeNames={"#yr": "year"},  # Expression Attribute Names for Projection Expression only.
             KeyConditionExpression=Key('username').eq(username)
         )
         if response["Items"]:
             for i in response["Items"]:
                 if password==i["password"]:
-                    return "login page"
+                    return "login successfully"
         else:
             return "username or password wrong"
-
-    return 'login page'
+    return "login page"
 
 
 @bp.route('/register', methods=['GET', 'POST'])
@@ -38,18 +34,18 @@ def register():
     if request.method == "POST":
         username = 'username'
         password = 'password'
-        date = 000000 # member since
+        start_time = 000000 # member since
         item_type = 'account'
 
         response = table.query(
-            KeyConditionExpression=Key('username').eq(username) & Key('date').eq(date)
+            KeyConditionExpression=Key('username').eq(username) & Key('start_time').eq(start_time)
         )
         if response[u'Items']:
             return "username exists"
         response = table.put_item(
             Item={
                 'username': username,
-                'date': date,
+                'start_time': start_time,
                 'password' : password,
                 'item_type' : item_type
             }
@@ -57,12 +53,3 @@ def register():
 
         return response
 
-#Convert dynamodb item to JSON
-class DecimalEncoder(json.JSONEncoder):
-    def default(self, o):
-        if isinstance(o, decimal.Decimal):
-            if abs(o) % 1 > 0:
-                return float(o)
-            else:
-                return int(o)
-        return super(DecimalEncoder, self).default(o)

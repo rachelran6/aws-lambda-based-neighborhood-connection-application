@@ -2,6 +2,7 @@ import json
 
 import boto3
 from boto3.dynamodb.conditions import Attr, Key
+from botocore.exceptions import ClientError
 from flask import (Blueprint, flash, redirect, render_template, request,
                    session, url_for)
 import app
@@ -20,14 +21,14 @@ def events():
         response = table.put_item(
             Item={
                 'username': 'eric',
-                'date': 1585462294,  # timestamp
+                'start_time': 1585462294,  # timestamp
                 'title': 'tennis',
                 'required_parti_num': 10,
                 'address': 'st george',
                 'is_active': 1,
                 'item_type': 'host',
-                'endtime': 100000, #seconds
-                'event_type': "sports"
+                'end_time': 1585492294, #seconds
+                'event_type': "sports",
             }
         )
         return response
@@ -39,15 +40,30 @@ def events():
 def join_event():
     if request.method == "POST":
 
+        username = 'sara'
+        start_time = 1585462294
+        end_time = 1585492294
+        response = table.query(
+            KeyConditionExpression=Key('username').eq(username)
+        )
+
+        if response["Items"]:
+            for i in response["Items"]:
+                if end_time<i["start_time"] or start_time>i["end_time"]:
+                    pass
+                else:
+                    return "Your events have conflicts"
+
         response = table.put_item(
             Item={
                 'username': 'sara',
-                'date': 158546224,  # current timestamp
+                'start_time': 1585462294,
+                'end_time': 1585492294,# current timestamp
                 'title': 'tennis',
-                'item_type': 'participant'
+                'item_type': 'participant',
             })
+        return "participants added to event"
 
-        return response
 
 
 @bp.route('/rate', methods=['POST'])
@@ -55,7 +71,7 @@ def rate_event():
     response = table.update_item(
         Key={
             'username': 'sara',
-            'date': 158546224,  # current timestamp
+            'start_time': 1585462294
         },
         UpdateExpression="SET stars= :var1",
         ExpressionAttributeValues={
@@ -65,6 +81,25 @@ def rate_event():
 
             )
     return 'rate events'
+
+@bp.route('/dropout', methods=['DELETE'])
+def dropout_event():
+    try:
+        response = table.delete_item(
+            Key={
+                'username': 'sara',
+                'start_time': 1585462294
+            }
+        )
+    except ClientError as e:
+        if e.response['Error']['Code'] == "ConditionalCheckFailedException":
+            print(e.response['Error']['Message'])
+        else:
+            raise
+    else:
+        print("DeleteItem succeeded:")
+    return response
+
 
 # if __name__== "__main__":
 #   createEvent()
