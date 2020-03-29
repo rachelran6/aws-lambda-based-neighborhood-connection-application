@@ -147,3 +147,6 @@ static
 zappa_settings.json
 
 .vscode
+
+.idea
+
