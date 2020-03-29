@@ -43,3 +43,4 @@ wrapt==1.11.2
 wsgi-request-logger==0.4.6
 zappa==0.51.0
 zipp==3.1.0
+flask-dynamo==0.1.2
