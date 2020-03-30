@@ -56,6 +56,8 @@ def update_table():
 
 
 webapp = Flask(__name__, instance_relative_config=True)
+webapp.secret_key = 'super secret key'
+
 
 webapp.register_blueprint(auth.bp)
 webapp.register_blueprint(events.bp)

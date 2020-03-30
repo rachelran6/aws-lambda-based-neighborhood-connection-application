@@ -48,15 +48,21 @@ def _authenticate(username, password):
     assert username is not None, "invalid username"
     assert password is not None, "invalid password"
 
-    response = table.get_item(
-        KeyConditionExpression=Key('username').eq(username)
+    response = table.query(
+        KeyConditionExpression=Key('username').eq(
+            username) & Key('start_time').gt(0)
     )
 
-    user = response['items'][0]
+    print(response)
+    records, user = response['Items'], None
+
+    for r in records:
+        user = r if r['item_type'] == 'account' else None
 
     assert user is not None, "invalid credential"
+
     assert bcrypt.checkpw(password.encode('utf-8'),
-                          user['password'].encode('utf-8')), "invalid credential"
+                          user['password'].value), "invalid credential"
 
 
 @bp.route('/login', methods=['GET', 'POST'])
@@ -77,7 +83,7 @@ def login():
 
         return jsonify({
             'isSuccess': True,
-            'url': url_for('dashboard')
+            'url': url_for('index')
         })
 
     except AssertionError as e:
@@ -123,7 +129,8 @@ def register():
             }
         )
         return jsonify({
-            'isSuccess': True
+            'isSuccess': True,
+            'url': url_for('auth.login')
         })
 
     except (botocore.exceptions.ClientError, AssertionError) as e:
