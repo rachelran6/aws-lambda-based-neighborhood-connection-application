@@ -1,37 +1,51 @@
-import json
-
 import boto3
+import botocore
 from boto3.dynamodb.conditions import Attr, Key
 from botocore.exceptions import ClientError
-from flask import (Blueprint, flash, redirect, render_template, request,
-                   session, url_for)
-import app
+from flask import (Blueprint, flash, jsonify, redirect, render_template,
+                   request, session, url_for)
 
+import app
 
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 dynamodb_client = boto3.client('dynamodb', region_name='us-east-1')
 table = dynamodb.Table('Events')
-# table_client = dynamodb_client.table('Events')
 bp = Blueprint("events", __name__, url_prefix='/events')
 
 
 @bp.route('/', methods=['GET', 'POST'])
 def events():
-    if request.method == "POST":
-        response = table.put_item(
-            Item={
-                'username': 'eric',
-                'start_time': 1585462294,  # timestamp
-                'title': 'tennis',
-                'required_parti_num': 10,
-                'address': 'st george',
-                'is_active': 1,
-                'item_type': 'host',
-                'end_time': 1585492294,  # seconds
-                'event_type': "sports",
-            }
-        )
-    return response
+    try:
+        if request.method == 'GET':
+            response = table.query(
+                IndexName='item_type_index',
+                KeyConditionExpression=Key('item_type').eq('host')
+            )
+
+            return jsonify({
+                'isSuccess': True,
+                'data': response['Items']
+            })
+        if request.method == "POST":
+            response = table.put_item(
+                Item={
+                    'username': 'eric',
+                    'start_time': 1585462294,  # timestamp
+                    'title': 'tennis',
+                    'required_parti_num': 10,
+                    'address': 'st george',
+                    'is_active': 1,
+                    'item_type': 'host',
+                    'end_time': 1585492294,  # seconds
+                    'event_type': "sports",
+                }
+            )
+            return response
+    except (botocore.exceptions.ClientError, AssertionError) as e:
+        return jsonify({
+            'isSucess': False,
+            'message': e.args
+        })
 
 
 @bp.route('/join', methods=['POST'])

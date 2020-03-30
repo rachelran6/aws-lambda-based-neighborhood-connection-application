@@ -3,6 +3,7 @@ import functools
 import logging
 import re
 from datetime import datetime
+
 import bcrypt
 import boto3
 import botocore
@@ -86,7 +87,7 @@ def login():
             'url': url_for('index')
         })
 
-    except AssertionError as e:
+    except (AssertionError, botocore.exceptions.ClientError) as e:
         return jsonify({
             'isSuccess': False,
             'message': e.args
