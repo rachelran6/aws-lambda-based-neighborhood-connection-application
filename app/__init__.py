@@ -105,7 +105,7 @@ def update_table():
                 {
                     "Create": {
                         # You need to name your index and specifically refer to it when using it for queries.
-                        "IndexName": "item_type",
+                        "IndexName": "item_typeIndex",
                         # Like the table itself, you need to specify the key schema for an index.
                         # For a global secondary index, you can use a simple or composite key schema.
                         "KeySchema": [
