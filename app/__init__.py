@@ -39,7 +39,7 @@ if table_name not in table_names:
             },
             {
                 'AttributeName': 'start_time',
-                'AttributeType': 'N'
+                'AttributeType': 'S'
             },
             {
                 'AttributeName': 'item_type',

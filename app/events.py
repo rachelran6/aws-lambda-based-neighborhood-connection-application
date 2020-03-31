@@ -13,7 +13,7 @@ table = dynamodb.Table('Events')
 bp = Blueprint("events", __name__, url_prefix='/events')
 
 
-@bp.route('/', methods=['GET', 'POST'])
+@bp.route('/', methods=['GET', 'POST', 'DELETE'])
 def events():
     try:
         if request.method == 'GET':
@@ -27,20 +27,23 @@ def events():
                 'data': response['Items']
             })
         if request.method == "POST":
-            response = table.put_item(
+            table.put_item(
                 Item={
-                    'username': 'eric',
-                    'start_time': 1585462294,  # timestamp
-                    'title': 'tennis',
-                    'required_parti_num': 10,
-                    'address': 'st george',
+                    'username': session.get('username'),
+                    'start_time': request.form['start_time'],
+                    'end_time': request.form['end_time'],
+                    'title': request.form['title'],
+                    'required_parti_num': request.form['required_participant_number'],
+                    'address': request.form['address'],
                     'is_active': 1,
                     'item_type': 'host',
-                    'end_time': 1585492294,  # seconds
-                    'event_type': "sports",
+                    'event_type': request.form['event_type']
                 }
             )
-            return response
+            return jsonify({
+                'isSuccess': True,
+                'url': url_for('index')
+            })
     except (botocore.exceptions.ClientError, AssertionError) as e:
         return jsonify({
             'isSucess': False,
@@ -70,7 +73,7 @@ def join_event():
             Item={
                 'username': 'sara',
                 'start_time': 1585462294,
-                'end_time': 1585492294,  # current timestamp
+                'end_time': 1585492294,
                 'title': 'tennis',
                 'item_type': 'participant',
             })
@@ -113,5 +116,5 @@ def dropout_event():
     return response
 
 
-# if __name__== "__main__":
-#   createEvent()
+if __name__ == "__main__":
+    pass

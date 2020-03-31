@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="http://malsup.github.com/jquery.form.js"></script> 
     <script type="scripts/events."></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDbhbcq9vDMMwwl2LG7DE5PQK5Os-hbgSw&callback=initMap"
     async defer></script>
@@ -17,7 +18,7 @@
   <body>
     <div id="map"></div>
     <br>
-    
+
     <div class="container-fluid col-6 myTable">
       <input class="form-control" id="myInput" type="text" placeholder="Search..">
       <table id='eventTable' class="table table-bordered table-striped">
@@ -26,7 +27,8 @@
             <th>Title</th>
             <th>Type</th>
             <th>Location</th>
-            <th>Time</th>
+            <th>Start time</th>
+            <th>End time</th>
             <th>Host</th>
           </tr>
         </thead>
@@ -45,14 +47,14 @@
             </button>
           </div>
           <div class="modal-body">
-            <form>
+            <form id='eventCreateFrom' action='/events'>
               <div class="form-group">
                 <label for="recipient-name" class="col-form-label">Title:</label>
-                <input type="text" class="form-control" name="tile">
+                <input type="text" class="form-control" name="title">
               </div>
               <div>
                 <label for="cars">Choose a car:</label>
-                  <select id="cars" name="event-type">
+                  <select id="cars" name="event_type">
                   <option value="volvo">sports</option>
                   <option value="saab">entertainment</option>
                   <option value="fiat">carpool</option>
@@ -64,25 +66,25 @@
                 <label for="message-text" class="col-form-label">Location:</label>
                 <input class="form-control" name="address">
               </div>
-
               <div class="form-group">
                 <label for="birthdaytime">time:</label>
-                <input type="datetime-local" name="start-time">
+                <input type="datetime-local" name="start_time">
               </div>
               <div class="form-group">
                 <label for="birthdaytime">time:</label>
-                <input type="datetime-local" name="end-time">
+                <input type="datetime-local" name="end_time">
               </div>
               <div class="form-group">
                 <label for="message-text" class="col-form-label">Participants Required:</label>
-                <input class="form-control" name="participants_numbers">
+                <input class="form-control" name="required_participant_number">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Create</button>
               </div>
             </form>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-primary">Create</button>
-          </div>
+          
         </div>
       </div>
     </div>
@@ -125,7 +127,7 @@
       }
       var map, infoWindow;
       var im = 'http://www.robotwoods.com/dev/misc/bluecircle.png';
-      function initMap() {
+      initMap = () => {
         map = new google.maps.Map(document.getElementById('map'), {
             center: {lat: -34.397, lng: 150.644},
             zoom: 12
@@ -163,20 +165,15 @@
                                               '<td>' + events[i]['title'] + '</td>' + 
                                               '<td>' + events[i]['event-type'] + '</td>' + 
                                               '<td>' + events[i]['address'] + '</td>' + 
+                                              '<td>' + events[i]['time'] + '</td>' +
                                               '<td>' + events[i]['time'] + '</td>' + 
                                               '<td>' + events[i]['host'] + '</td>' + 
                                               + '</tr>')
           }
       }
 
-      
-
       joinEvent = () => {
         //TODO: join event back end
-      }
-
-      createEvent = () => {
-        //TODO: post event to back end
       }
 
       searchEvent = () => {
@@ -190,6 +187,20 @@
         loadEventTable(events)
         
         $("#myInput").on("keyup", searchEvent);
+
+        $('#eventCreateFrom')
+            .ajaxForm({
+                url : "events",
+                dataType : "json",
+                type: "POST",
+                success : function (response) {
+                    if (response['isSuccess']) {
+                        window.location.replace(response["url"]);
+                    } else {
+                        alert(response['message']);
+                    }
+                }
+            });
       });
     </script>
     <style>
