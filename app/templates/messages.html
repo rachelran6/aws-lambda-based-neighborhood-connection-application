@@ -3,11 +3,15 @@
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<link rel="stylesheet" href="messages.css">
+<link rel="stylesheet" type= "text/css" href="{{ url_for('static',filename='styles/messages.css') }}">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" type="text/css" rel="stylesheet">
 
 </head>
 <body>
+<div id="hidden_info">
+  <input id="username" type="hidden" value="{{username}}">
+  <input id="receiver" type="hidden" value="{{receiver}}">
+</div>
 <div class="container">
     <div class="row justify-content-center">
         <h3 class="text-center">Messaging</h3>
@@ -18,18 +22,11 @@
             <div class="inbox_people">
               <div class="headind_srch">
                 <div class="recent_heading">
-                  <h4>Recent</h4>
-                </div>
-                <div class="srch_bar">
-                  <div class="stylish-input-group">
-                    <input type="text" class="search-bar"  placeholder="Search" >
-                    <span class="input-group-addon">
-                    <button type="button"> <i class="fa fa-search" aria-hidden="true"></i> </button>
-                    </span> </div>
+                  <h4>Contacts</h4>
                 </div>
               </div>
-              <div class="inbox_chat">
-                <div class="chat_list active_chat">
+              <div class="inbox_chat" id="show_contacts">
+                <!-- <div class="chat_list active_chat">
                   <div class="chat_people">
                     <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
                     <div class="chat_ib">
@@ -48,104 +45,18 @@
                         astrology under one roof.</p>
                     </div>
                   </div>
-                </div>
-                <div class="chat_list">
-                  <div class="chat_people">
-                    <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
-                    <div class="chat_ib">
-                      <h5>Sunil Rajput <span class="chat_date">Dec 25</span></h5>
-                      <p>Test, which is a new approach to have all solutions
-                        astrology under one roof.</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="chat_list">
-                  <div class="chat_people">
-                    <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
-                    <div class="chat_ib">
-                      <h5>Sunil Rajput <span class="chat_date">Dec 25</span></h5>
-                      <p>Test, which is a new approach to have all solutions
-                        astrology under one roof.</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="chat_list">
-                  <div class="chat_people">
-                    <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
-                    <div class="chat_ib">
-                      <h5>Sunil Rajput <span class="chat_date">Dec 25</span></h5>
-                      <p>Test, which is a new approach to have all solutions
-                        astrology under one roof.</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="chat_list">
-                  <div class="chat_people">
-                    <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
-                    <div class="chat_ib">
-                      <h5>Sunil Rajput <span class="chat_date">Dec 25</span></h5>
-                      <p>Test, which is a new approach to have all solutions
-                        astrology under one roof.</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="chat_list">
-                  <div class="chat_people">
-                    <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
-                    <div class="chat_ib">
-                      <h5>Sunil Rajput <span class="chat_date">Dec 25</span></h5>
-                      <p>Test, which is a new approach to have all solutions
-                        astrology under one roof.</p>
-                    </div>
-                  </div>
-                </div>
+                </div> -->
+
               </div>
             </div>
             <div class="mesgs">
-              <div class="msg_history">
-                <div class="incoming_msg">
-                  <div class="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
-                  <div class="received_msg">
-                    <div class="received_withd_msg">
-                      <p>Test which is a new approach to have all
-                        solutions</p>
-                      <span class="time_date"> 11:01 AM    |    June 9</span></div>
-                  </div>
-                </div>
-                <div class="outgoing_msg">
-                  <div class="sent_msg">
-                    <p>Test which is a new approach to have all
-                      solutions</p>
-                    <span class="time_date"> 11:01 AM    |    June 9</span> </div>
-                </div>
-                <div class="incoming_msg">
-                  <div class="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
-                  <div class="received_msg">
-                    <div class="received_withd_msg">
-                      <p>Test, which is a new approach to have</p>
-                      <span class="time_date"> 11:01 AM    |    Yesterday</span></div>
-                  </div>
-                </div>
-                <div class="outgoing_msg">
-                  <div class="sent_msg">
-                    <p>Apollo University, Delhi, India Test</p>
-                    <span class="time_date"> 11:01 AM    |    Today</span> </div>
-                </div>
-                <div class="incoming_msg">
-                  <div class="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
-                  <div class="received_msg">
-                    <div class="received_withd_msg">
-                      <p>We work directly with our designers and suppliers,
-                        and sell direct to you, which means quality, exclusive
-                        products, at a price anyone can afford.</p>
-                      <span class="time_date"> 11:01 AM    |    Today</span></div>
-                  </div>
-                </div>
+              <div class="msg_history" id="show_messages">
+
               </div>
               <div class="type_msg">
                 <div class="input_msg_write">
-                  <input type="text" class="write_msg" placeholder="Type a message" />
-                  <button class="msg_send_btn" type="button"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
+                  <input type="text" class="write_msg" placeholder="Type a message" id="msg_to_be_sent"/>
+                  <button class="msg_send_btn" type="button" id="msg_send_btn_id"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
                 </div>
               </div>
             </div>
@@ -154,5 +65,154 @@
     </div>
 </div>
 </body>
+<script>
+  loadMessages = (username, receiver) => {
+    var pass_data = {
+      "receiver":receiver,
+      "username":username,
+    }
+    var pass_data0 = {
+      "username":username,
+    }
+    if (receiver != "") {
+      console.log("~~~~~~~~hello")
+      console.log(JSON.stringify(pass_data))
+      $.ajax({
+        type: 'GET',
+        url: '/users/messages',
+        contentType: 'application/json',
+        data: pass_data,
+        dataType: 'json',
+        success: (result) => {
+          $('#show_messages').empty();  
+          for (var key in result['messages']) {
+            console.log(key)
+            var obj = result['messages'][key]
+            console.log(obj)
+            var obj_ =  JSON.parse(obj)
+
+            if (obj_["sender"] == username) {
+              var this_date = new Date(parseInt(key) * 1000);
+              console.log(this_date)
+              $("#show_messages").append(
+                '<div class="outgoing_msg">'
+                  +'<div class="sent_msg">'
+                    +'<p>'+ obj_["message"] +'</p>'
+                    +'<span class="time_date">' + this_date.toDateString() + '</span> </div>'
+                +'</div>'
+              )
+            }
+            else if (obj_["sender"] == receiver){
+              var this_date = new Date(parseInt(key) * 1000);
+              console.log(this_date)
+              $("#show_messages").append(
+                '<div class="incoming_msg">'
+                  +'<div class="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>'
+                  +'<div class="received_msg">'
+                    +'<div class="received_withd_msg">'
+                      +'<p>' + obj_["message"] + '</p>'
+                      +'<span class="time_date">' + this_date.toDateString() + '</span></div>'
+                  +'</div>'
+                +'</div>'
+              )
+            }
+          }
+        },
+        error: function(error) {
+          console.log(error);
+        }
+      });
+    }
+      $.ajax({
+        type: 'GET',
+        url: '/users/messages_contacts',
+        contentType: 'application/json',
+        data: pass_data0,
+        dataType: 'json',
+        success: (result) => {
+          var contacts = result['contacts']
+          contacts = contacts.replace(/'/g, '"');
+          contacts = JSON.parse(contacts);
+          console.log(contacts)
+          for (var i = 0; i < contacts.length; i++) {
+            if(contacts[i] == receiver) {
+              $("#show_contacts").append(
+              '<div class="chat_list active_chat" id="'+contacts[i]+'">'
+                  +'<div class="chat_people">'
+                    +'<div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>'
+                    +'<div class="chat_ib">'
+                      +'<h5>' + contacts[i] +'</h5>'
+                    +'</div>'
+                  +'</div>'
+                +'</div>'
+              )
+            }
+            else {
+              $("#show_contacts").append(
+              '<div class="chat_list" id="'+contacts[i]+'">'
+                  +'<div class="chat_people">'
+                    +'<div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>'
+                    +'<div class="chat_ib">'
+                      +'<h5>' + contacts[i] +'</h5>'
+                    +'</div>'
+                  +'</div>'
+                +'</div>'
+              )
+            }
+
+          }
+
+          $(".chat_list").click(function(){
+          var buttonElementId = $(this).attr('id');
+          console.log("~~~~~~~~ buttonElementId")
+          console.log(buttonElementId)
+          $('#show_contacts').empty();
+          loadMessages(username, buttonElementId)
+        });
+
+        $("#msg_send_btn_id").click(function(){
+          var inputVal = document.getElementById("msg_to_be_sent").value;
+          var pass_data = {
+            "message":inputVal,
+            "receiver":receiver,
+            "username":username
+            }
+
+          $.ajax({
+            type: 'POST',
+            url: '/users/messages',
+            contentType: 'application/json',
+            data: JSON.stringify(pass_data),
+            dataType: 'json',
+            success: (result) => {
+              location.reload()
+              document.querySelector('.write_msg').value = 'Type a message'
+            },
+            error: function(error) {
+              console.log(error);
+            }
+          });
+        });
+
+
+        },
+        error: function(error) {
+          console.log(error);
+        }
+      });
+
+
+    }
+
+    $(document).ready(() => {
+      username = document.getElementById("username").value;
+      receiver = document.getElementById("receiver").value;
+      console.log(username)
+      console.log(receiver)
+
+        loadMessages(username, receiver)
+
+    });
+</script>
 </html>
 

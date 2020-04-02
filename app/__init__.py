@@ -1,7 +1,7 @@
 from datetime import datetime
 
 import boto3
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 
 from app import auth, events, users
 
@@ -125,3 +125,10 @@ def profile():
 @webapp.route('/event', methods=['GET'])
 def event():
     return render_template('event.html')
+
+
+@webapp.route('/users/message', methods=['GET'])
+def messages():
+    username = "eric"
+    receiver = "sara"
+    return render_template('messages.html', username = username, receiver = receiver)

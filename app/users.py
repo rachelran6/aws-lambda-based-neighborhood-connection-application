@@ -1,8 +1,11 @@
+import decimal
+
 from flask import Blueprint, request, jsonify, abort, url_for, redirect
 from datetime import datetime
 from boto3.dynamodb.conditions import Key, Attr
 import botocore
 import boto3
+import json
 
 bp = Blueprint("users", __name__, url_prefix='/users')
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
@@ -11,57 +14,76 @@ table = dynamodb.Table('Events')
 
 @bp.route('/', methods=['GET'])
 def users():
-
     return 'users index'
 
 
 @bp.route('/messages', methods=['GET', 'POST', 'DELETE'])
 def messages():
-    username = 'username'
-    receiver = 'receiver'
-    message_sent = {}
-    message_received = {}
     try:
         if request.method == 'GET':
+            get_receiver = request.args.get('receiver')
+            get_username = request.args.get('username')
+            print("~~~~~~~~~ receiver: "+get_receiver)
+            print("~~~~~~~~~ username: "+get_username)
+            messages_dict = {}
+            sorted_messages_dict = {}
+            this_dict = {}
             response_sender = table.query(
                 IndexName="item_type_index",
                 KeyConditionExpression=Key('item_type').eq('message'),
-                FilterExpression=Attr('username').eq(username) & Attr('receiver').eq(receiver)
+                FilterExpression=Attr('username').eq(get_username) & Attr('receiver').eq(get_receiver)
             )
+            response_receiver = table.query(
+                IndexName="item_type_index",
+                KeyConditionExpression=Key('item_type').eq('message'),
+                FilterExpression=Attr('username').eq(get_receiver) & Attr('receiver').eq(get_username)
+            )
+
             if response_sender["Items"]:
                 for i in response_sender["Items"]:
-                    message_sent[i["start_time"]] = i["message"]
+                    this_time = json.dumps(i['start_time'], cls=DecimalEncoder)
+                    this_dict.clear()
+                    this_dict["message"] = str(i["message"])
+                    this_dict["sender"] = str(i["username"])
+                    this_dict["receiver"] = str(i["receiver"])
+                    messages_dict[this_time] = json.dumps(this_dict)
 
-            response_receiver = table.query(
-                IndexName="item_typeIndex",
-                KeyConditionExpression=Key('item_type').eq('message'),
-                FilterExpression=Attr('username').eq(receiver) & Attr('receiver').eq(username)
-            )
             if response_receiver["Items"]:
                 for i in response_receiver["Items"]:
-                    message_received[i["start_time"]] = i["message"]
+                    this_time = json.dumps(i['start_time'], cls=DecimalEncoder)
+                    this_dict.clear()
+                    this_dict["message"] = str(i["message"])
+                    this_dict["sender"] = str(i["username"])
+                    this_dict["receiver"] = str(i["receiver"])
+                    messages_dict[this_time] = json.dumps(this_dict)
 
-            message_sent = sorted(message_sent.keys())
-            message_received = sorted(message_received.keys())
-            if len(message_sent) == 0 & len(message_received) == 0:
-                return "no messages"
+            for key in sorted(messages_dict.keys(), reverse=False):
+                sorted_messages_dict[key] = messages_dict[key]
+            if len(sorted_messages_dict) == 0:
+                return jsonify({
+                    'isSuccess': False,
+                })
             else:
-                return message_sent, message_received
+                return jsonify({
+                    'isSuccess': True,
+                    'messages': sorted_messages_dict,
+                })
 
         elif request.method == 'POST':
-            username = 'username'
-            message = 'this is a message'
-            start_time = datetime.utcnow()
+            data = request.get_json()
+            send_message = data['message']
+            send_receiver = data['receiver']
+            send_username = data['username']
+            start_time = int(datetime.utcnow().strftime("%s"))
             item_type = 'message'
-            receiver = 'receiver'
 
             response = table.put_item(
                 Item={
-                    'username': username,
+                    'username': send_username,
                     'start_time': start_time,
-                    'message': message,
+                    'message': send_message,
                     'item_type': item_type,
-                    'receiver': receiver
+                    'receiver': send_receiver,
                 }
             )
 
@@ -83,4 +105,46 @@ def messages():
             'message': e.args
         })
 
-    return 'user message'
+@bp.route('/messages_contacts', methods=['GET'])
+def messages_contacts():
+    username = request.args.get('username')
+    try:
+        contact_list = []
+        response_sender_all = table.query(
+                IndexName="item_type_index",
+                KeyConditionExpression=Key('item_type').eq('message'),
+                FilterExpression=Attr('username').eq(username)
+        )
+        response_receiver_all = table.query(
+                IndexName="item_type_index",
+                KeyConditionExpression=Key('item_type').eq('message'),
+                FilterExpression=Attr('receiver').eq(username)
+        )
+        if response_sender_all["Items"]:
+            for i in response_sender_all["Items"]:
+                contact_list.append(str(i["receiver"]))
+        if response_receiver_all["Items"]:
+            for i in response_receiver_all["Items"]:
+                contact_list.append(str(i["username"]))
+        contact_set = set(contact_list)
+        if len(contact_set) == 0:
+            return jsonify({
+                'isSuccess': False,
+            })
+        else:
+            return jsonify({
+                'isSuccess': True,
+                'contacts': str(list(contact_set)),
+            })            
+
+    except botocore.exceptions.ClientError as e:
+        return jsonify({
+            'isSuccess': False,
+            'message': e.args
+        })
+
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, decimal.Decimal):
+            return int(obj)
+        return super(DecimalEncoder, self).default(obj)
