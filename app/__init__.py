@@ -1,7 +1,10 @@
+import decimal
 from datetime import datetime
 
 import boto3
-from flask import Flask, render_template
+import botocore
+from boto3.dynamodb.conditions import Key
+from flask import Flask, render_template, request
 
 from app import auth, events, users
 
@@ -21,15 +24,15 @@ table_name = 'Events'
 table_names = [table.name for table in dynamodb.tables.all()]
 if table_name not in table_names:
     response = dynamodb.create_table(
-        TableName='Events',
+        TableName=table_name,
         KeySchema=[
             {
                 'AttributeName': 'username',
-                'KeyType': 'HASH'  # Partition key
+                'KeyType': 'HASH'
             },
             {
                 'AttributeName': 'start_time',
-                'KeyType': 'RANGE'  # Sort key
+                'KeyType': 'RANGE'
             }
         ],
         AttributeDefinitions=[
@@ -39,7 +42,7 @@ if table_name not in table_names:
             },
             {
                 'AttributeName': 'start_time',
-                'AttributeType': 'S'
+                'AttributeType': 'N'
             },
             {
                 'AttributeName': 'item_type',
@@ -53,10 +56,7 @@ if table_name not in table_names:
         },
         GlobalSecondaryIndexes=[
             {
-                # You need to name your index and specifically refer to it when using it for queries.
                 "IndexName": "item_type_index",
-                # Like the table itself, you need to specify the key schema for an index.
-                # For a global secondary index, you can use a simple or composite key schema.
                 "KeySchema": [
                     {
                         "AttributeName": "item_type",
@@ -64,15 +64,12 @@ if table_name not in table_names:
                     },
                     {
                         'AttributeName': 'start_time',
-                        'KeyType': 'RANGE'  # Sort key
+                        'KeyType': 'RANGE'
                     }
                 ],
-                # You can choose to copy only specific attributes from the original item into the index.
-                # You might want to copy only a few attributes to save space.
                 "Projection": {
                     "ProjectionType": "ALL"
                 },
-                # Global secondary indexes have read and write capacity separate from the underlying table.
                 "ProvisionedThroughput": {
                     "ReadCapacityUnits": 1,
                     "WriteCapacityUnits": 1,
@@ -124,4 +121,18 @@ def profile():
 
 @webapp.route('/event', methods=['GET'])
 def event():
-    return render_template('event.html')
+    try:
+        response = dynamodb.Table('Events').query(
+            KeyConditionExpression=Key('username').eq(
+                request.args.get('username')) &
+            Key('start_time').eq(int(request.args.get('timestamp')))
+        )
+        return render_template('event.html', event=response['Items'][0])
+    except (botocore.exceptions.ClientError, AssertionError) as e:
+        return e.args
+
+
+def decimal_default(obj):
+    if isinstance(obj, decimal.Decimal):
+        return int(obj)
+    raise TypeError

@@ -5,6 +5,8 @@ from botocore.exceptions import ClientError
 from flask import (Blueprint, flash, jsonify, redirect, render_template,
                    request, session, url_for)
 
+import json
+from datetime import datetime
 import app
 
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
@@ -21,26 +23,25 @@ def events():
                 IndexName='item_type_index',
                 KeyConditionExpression=Key('item_type').eq('host')
             )
-
-            return jsonify({
+            return json.dumps({
                 'isSuccess': True,
                 'data': response['Items']
-            })
+            }, default=app.decimal_default)
         if request.method == "POST":
+            print(request.form['event_type'])
             table.put_item(
                 Item={
                     'username': session.get('username'),
-                    'start_time': request.form['start_time'],
-                    'end_time': request.form['end_time'],
+                    'start_time': int(datetime.fromisoformat(request.form['start_time']).timestamp()),
+                    'end_time': int(datetime.fromisoformat(request.form['end_time']).timestamp()),
                     'title': request.form['title'],
                     'required_parti_num': request.form['required_participant_number'],
                     'address': request.form['address'],
                     'is_active': 1,
                     'item_type': 'host',
                     'event_type': request.form['event_type']
-                }
-            )
-            return jsonify({
+                })
+            return json.dumps({
                 'isSuccess': True,
                 'url': url_for('index')
             })
@@ -53,31 +54,28 @@ def events():
 
 @bp.route('/join', methods=['POST'])
 def join_event():
-    if request.method == "POST":
 
-        username = 'sara'
-        start_time = 1585462294
-        end_time = 1585492294
-        response = table.query(
-            KeyConditionExpression=Key('username').eq(username)
-        )
+    username = 'sara'
+    start_time = 1585462294
+    end_time = 1585492294
+    response = table.query(
+        KeyConditionExpression=Key('username').eq(username)
+    )
 
-        if response["Items"]:
-            for i in response["Items"]:
-                if end_time < i["start_time"] or start_time > i["end_time"]:
-                    pass
-                else:
-                    return "Your events have conflicts"
-
-        response = table.put_item(
-            Item={
-                'username': 'sara',
-                'start_time': 1585462294,
-                'end_time': 1585492294,
-                'title': 'tennis',
-                'item_type': 'participant',
+    for i in response["Items"]:
+        if not end_time < int(i["start_time"]) or not start_time > int(i["end_time"]):
+            return jsonify({
+                'isSuccess': False
             })
-        return "participants added to event"
+    response = table.put_item(
+        Item={
+            'username': 'sara',
+            'start_time': 1585462294,
+            'end_time': 1585492294,
+            'title': 'tennis',
+            'item_type': 'participant',
+        })
+    return "participants added to event"
 
 
 @bp.route('/rate', methods=['POST'])
