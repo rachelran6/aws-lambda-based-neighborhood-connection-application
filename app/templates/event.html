@@ -1,7 +1,6 @@
 <!doctype html>
 <html lang="en">
     <head>
-        <!-- Required meta tags -->
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <link rel="shortcut icon" type="image/png" href="favicon_io/favicon-32x32.png"/>
@@ -11,92 +10,84 @@
         <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     </head>
     <body>
         <div class="row" id="contatti">
-        <div class="container mt-5" >
-
-            <div class="row" style="height:550px;">
-            <div class="col-md-6 maps" >
-                <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d11880.492291371422!2d12.4922309!3d41.8902102!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x28f1c82e908503c4!2sColosseo!5e0!3m2!1sit!2sit!4v1524815927977" frameborder="0" style="border:0" allowfullscreen></iframe>
-            </div>
-            <div class="col-md-6">
-                <h2 class="text-uppercase mt-3 font-weight-bold text-white">CONTATTACI</h2>
-                <form action="">
-                <div class="row">
-                    <div class="col-lg-6">
-                    <div class="form-group">
-                        <input type="text" class="form-control mt-2" placeholder="Nome/Società" required>
-                    </div>
-                    </div>
-                    <div class="col-lg-6">
-                    <div class="form-group">
-                        <input type="text" class="form-control mt-2" placeholder="Oggetto" required>
-                    </div>
-                    </div>
-                    <div class="col-lg-6">
-                    <div class="form-group">
-                        <input type="email" class="form-control mt-2" placeholder="Email" required>
-                    </div>
-                    </div>
-                    <div class="col-lg-6">
-                    <div class="form-group">
-                        <input type="number" class="form-control mt-2" placeholder="Telefono" required>
-                    </div>
-                    </div>
-                    <div class="col-12">
-                    <div class="form-group">
-                        <textarea class="form-control" id="exampleFormControlTextarea1" placeholder="Inserisci testo" rows="3" required></textarea>
-                    </div>
-                    </div>
-                    <div class="col-12">
-                    <div class="form-group">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="invalidCheck2" required>
-                        <label class="form-check-label" for="invalidCheck2">
-                        Accetta le condizioni
-                        </label>
-                    </div>
-                    </div>
-                    </div>
-                    <div class="col-12">
-                    <button class="btn btn-light" type="submit">Invia</button>
+            <div class="container mt-5" >
+                <div class="row" style="height:550px;">
+                    <div id="map" class="col-md-6 maps"></div>
+                    <div class="col-md-6">
+                        <h2 class="text-uppercase mt-3 font-weight-bold text-white">Event Detial</h2>
+                        <form action="">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <p3>Title: do something {{event['event_title']}}</p3>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <p3>Start Time: {{event['start_time']}} </p3>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <p3>End Time: {{event['end_time']}}</p3>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <p3>Participants: {{event['participant_count']}}/{{event['required_participant_count']}}</p3>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <p3></p3>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                <i class="fas fa-globe mt-3"></i><p3> {{event['address']}} </p3>
+                                </div>
+                            </div>
+                        </div>
+                        </form>
+                        <div class="text-white">
+                            <h2 class="text-uppercase mt-4 font-weight-bold">Host Info</h2>
+                            <i> {{event['username']}} </i>
+                            <span class="fa fa-star checked"></span>
+                            <span class="fa fa-star checked"></span>
+                            <span class="fa fa-star checked"></span>
+                            <span class="fa fa-star"></span>
+                            <span class="fa fa-star"></span><br>
+                            <i class="fas fa-phone mt-3"></i> <a href="tel:+">{{event['host_phone_number']}}</a><br>
+                            <i class="fa fa-envelope mt-3"></i> <a href="">{{event['host_email']}}</a><br>
+                            <div class="my-4">
+                                <a href="#" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Message host</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                </form>
-                <div class="text-white">
-                <h2 class="text-uppercase mt-4 font-weight-bold">dove siamo</h2>
-
-                <i class="fas fa-phone mt-3"></i> <a href="tel:+">(+39) 123456</a><br>
-                <i class="fas fa-phone mt-3"></i> <a href="tel:+">(+39) 123456</a><br>
-                <i class="fa fa-envelope mt-3"></i> <a href="">info@test.it</a><br>
-                <i class="fas fa-globe mt-3"></i> Piazza del Colosseo, 1, 00184 Roma<br>
-                <i class="fas fa-globe mt-3"></i> Piazza del Colosseo, 1, 00184 Roma<br>
-                <div class="my-4">
-                <a href=""><i class="fab fa-facebook fa-3x pr-4"></i></a>
-                <a href=""><i class="fab fa-linkedin fa-3x"></i></a>
-                </div>
-                </div>
-            </div>
-
             </div>
         </div>
-        </div>
-
         <div class="row text-center bg-success text-white" id="author">
-        <div class="col-12 mt-4 h3 ">
-        <a href="#">by P. Fattoruso</a>
+            <div class="col-12 mt-4 h3 ">
+                <a href="#"> University of Toronto ECE1779 Project 3 Winter 2020</a>
+            </div>
         </div>
-        <div class="col-12 my-2">
-        <a href="https://www.linkedin.com/in/paolofattoruso/" target="_blank"><i class="fab fa-linkedin fa-3x"></i></a>
-        </div>
-        </div>
-
     </body>
     <script>
-    
+        var map;
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+            center: {lat: -34.397, lng: 150.644},
+            zoom: 8
+            });
+        }
     </script>
-
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDbhbcq9vDMMwwl2LG7DE5PQK5Os-hbgSw&callback=initMap"
+    async defer></script>
     <style>
         #contatti{
         background-color: #70c3be;
@@ -106,52 +97,50 @@
         color: #fff;
         text-decoration: none;
         }
-
-
         @media (max-width: 575.98px) {
-
-        #contatti{padding-bottom: 800px;}
-        #contatti .maps iframe{
-            width: 100%;
-            height: 450px;
+            #contatti{padding-bottom: 800px;}
+            #contatti .maps iframe{
+                width: 100%;
+                height: 450px;
+            }
         }
-        }
-
-
         @media (min-width: 576px) {
-
-        #contatti{padding-bottom: 800px;}
-
+            #contatti{padding-bottom: 800px;
+        }
         #contatti .maps iframe{
-            width: 100%;
-            height: 450px;
+                width: 100%;
+                height: 450px;
+            }
         }
-        }
-
         @media (min-width: 768px) {
-
         #contatti{padding-bottom: 350px;}
-
         #contatti .maps iframe{
             width: 100%;
             height: 850px;
         }
         }
-
         @media (min-width: 992px) {
         #contatti{padding-bottom: 200px;}
-
         #contatti .maps iframe{
             width: 100%;
             height: 700px;
         }
         }
-
-
         #author a{
         color: #fff;
         text-decoration: none;
-            
+        }
+        .checked {
+            color: orange;
+        }
+        #map {
+            height: 100%;
+        }
+        /* Optional: Makes the sample page fill the window. */
+        html, body {
+            height: 90%;
+            margin: 5px;
+            padding: 5px;
         }
     </style>
 
