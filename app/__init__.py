@@ -136,7 +136,7 @@ def event():
 @webapp.route('/users/message', methods=['GET'])
 def messages():
     username = "eric"
-    receiver = "sara"
+    receiver = ""
     return render_template('messages.html', username = username, receiver = receiver)
 
 def decimal_default(obj):
