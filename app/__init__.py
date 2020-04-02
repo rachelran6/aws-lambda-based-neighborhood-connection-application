@@ -4,8 +4,8 @@ from datetime import datetime
 import boto3
 
 import botocore
-from boto3.dynamodb.conditions import Key
 from flask import Flask, render_template, request, jsonify
+from boto3.dynamodb.conditions import Key, Attr
 
 from app import auth, events, users
 
@@ -123,24 +123,49 @@ def profile():
 @webapp.route('/event', methods=['GET'])
 def event():
     try:
-        response = dynamodb.Table('Events').query(
+        print(request.args.get('username'))
+        event_response = dynamodb.Table('Events').query(
             KeyConditionExpression=Key('username').eq(
                 request.args.get('username')) &
             Key('start_time').eq(int(request.args.get('timestamp')))
         )
-        return render_template('event.html', event=response['Items'][0])
+        host_response = dynamodb.Table('Events').query(
+            KeyConditionExpression=Key('username').eq(
+                request.args.get('username')),
+            FilterExpression=Attr('item_type').eq("account")
+        )
+        review_response = dynamodb.Table('Events').query(
+            KeyConditionExpression=Key('username').eq(
+                request.args.get('username')) &
+            Key('start_time').eq(int(request.args.get('timestamp'))),
+            FilterExpression=Attr('item_type').eq('participant')
+        )
+
+        event = {
+            'username': host_response['Items'][0]['username'],
+            'email': "test eamil",  # host_response['Items'][0]['email'],
+            # host_response['Items'][0]['phone_number'],
+            'phone_number': 'test number',
+            # sum([float(event['start']) for event in review_response['Items']])//len(review_response['Items'])
+            'review': 3,
+            'start_time': str(datetime.fromtimestamp(event_response['Items'][0]['start_time'])),
+            'end_time': str(datetime.fromtimestamp(event_response['Items'][0]['end_time'])),
+            'address': event_response['Items'][0]['address'],
+            'title': event_response['Items'][0]['title']
+        }
+        return render_template('event.html', event=event)
     except (botocore.exceptions.ClientError, AssertionError) as e:
         return e.args
 
-      
+
 @webapp.route('/users/message', methods=['GET'])
 def messages():
     username = "eric"
-    receiver = ""
-    return render_template('messages.html', username = username, receiver = receiver)
+    receiver = "sara"
+    return render_template('messages.html', username=username, receiver=receiver)
+
 
 def decimal_default(obj):
     if isinstance(obj, decimal.Decimal):
         return int(obj)
     raise TypeError
-

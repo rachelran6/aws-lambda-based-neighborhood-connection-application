@@ -23,12 +23,12 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="form-group">
-                                    <p3>Title: do something {{event['event_title']}}</p3>
+                                    <p3>Title: {{event['title']}}</p3>
                                 </div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="form-group">
-                                    <p3>Start Time: {{event['start_time']}} </p3>
+                                    <p3>Start Time: {{  event['start_time']}} </p3>
                                 </div>
                             </div>
                             <div class="col-lg-6">
@@ -56,15 +56,21 @@
                         <div class="text-white">
                             <h2 class="text-uppercase mt-4 font-weight-bold">Host Info</h2>
                             <i> {{event['username']}} </i>
-                            <span class="fa fa-star checked"></span>
-                            <span class="fa fa-star checked"></span>
-                            <span class="fa fa-star checked"></span>
-                            <span class="fa fa-star"></span>
-                            <span class="fa fa-star"></span><br>
-                            <i class="fas fa-phone mt-3"></i> <a href="tel:+">{{event['host_phone_number']}}</a><br>
-                            <i class="fa fa-envelope mt-3"></i> <a href="">{{event['host_email']}}</a><br>
+                            {% for i in range(event['review']) %}
+                                <span class="fa fa-star checked"></span>
+                            {% endfor %}
+
+                            {% for i in range(5-event['review']) %}
+                                <span class="fa fa-star"></span>
+                            {% endfor %}
+                            <br>
+                            <i class="fas fa-phone mt-3"></i> <a href="tel:+">{{event['phone_number']}}</a><br>
+                            <i class="fa fa-envelope mt-3"></i> <a href="">{{event['email']}}</a><br>
                             <div class="my-4">
                                 <a href="#" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Message host</a>
+                            </div>
+                            <div class="my-4">
+                                <a href="#" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Join event</a>
                             </div>
                         </div>
                     </div>
