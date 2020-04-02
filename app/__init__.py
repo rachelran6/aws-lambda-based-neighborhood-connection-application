@@ -2,9 +2,10 @@ import decimal
 from datetime import datetime
 
 import boto3
+
 import botocore
 from boto3.dynamodb.conditions import Key
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 
 from app import auth, events, users
 
@@ -131,8 +132,15 @@ def event():
     except (botocore.exceptions.ClientError, AssertionError) as e:
         return e.args
 
+      
+@webapp.route('/users/message', methods=['GET'])
+def messages():
+    username = "eric"
+    receiver = "sara"
+    return render_template('messages.html', username = username, receiver = receiver)
 
 def decimal_default(obj):
     if isinstance(obj, decimal.Decimal):
         return int(obj)
     raise TypeError
+

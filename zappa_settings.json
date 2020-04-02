@@ -1,0 +1,11 @@
+{
+    "dev": {
+        "app_function": "app.webapp",
+        "aws_region": "us-east-1",
+        "profile_name": "default",
+        "project_name": "ece1779-a3",
+        "runtime": "python3.7",
+        "s3_bucket": "ece1779-a2-pic",
+        "keep_warm": false
+    }
+}
