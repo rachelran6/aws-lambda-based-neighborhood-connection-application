@@ -10,6 +10,8 @@ import json
 bp = Blueprint("users", __name__, url_prefix='/users')
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 table = dynamodb.Table('Events')
+s3_client = boto3.client('s3')
+BUCKET = "ece1779-a3-pic"
 
 
 @bp.route('/', methods=['GET'])
@@ -25,6 +27,26 @@ def messages():
             get_username = request.args.get('username')
             print("~~~~~~~~~ receiver: "+get_receiver)
             print("~~~~~~~~~ username: "+get_username)
+
+            response = table.query(
+                IndexName="item_type_index",
+                KeyConditionExpression=Key('item_type').eq('account'),
+                FilterExpression=Attr('username').eq(get_receiver)
+            )
+
+            if response["Items"]:
+                for i in response["Items"]:
+                    if str(i["profile_image"]) == "profile image":
+                        image_url = "false"
+                    else:
+                        image_name = str(i["profile_image"])
+                        image_url = s3_client.generate_presigned_url('get_object',
+                                                          Params={
+                                                              'Bucket': BUCKET,
+                                                              'Key': image_name,
+                                                          },
+                                                          ExpiresIn=3600)    
+
             messages_dict = {}
             sorted_messages_dict = {}
             this_dict = {}
@@ -67,6 +89,7 @@ def messages():
                 return jsonify({
                     'isSuccess': True,
                     'messages': sorted_messages_dict,
+                    'image_url': image_url,
                 })
 
         elif request.method == 'POST':
@@ -127,6 +150,29 @@ def messages_contacts():
             for i in response_receiver_all["Items"]:
                 contact_list.append(str(i["username"]))
         contact_set = set(contact_list)
+
+        url_list = []
+        for each in contact_set:
+            response = table.query(
+                IndexName="item_type_index",
+                KeyConditionExpression=Key('item_type').eq('account'),
+                FilterExpression=Attr('username').eq(each)
+            )
+
+            if response["Items"]:
+                for i in response["Items"]:
+                    if str(i["profile_image"]) == "profile image":
+                        image_url = "false"
+                    else:
+                        image_name = str(i["profile_image"])
+                        image_url = s3_client.generate_presigned_url('get_object',
+                                                          Params={
+                                                              'Bucket': BUCKET,
+                                                              'Key': image_name,
+                                                          },
+                                                          ExpiresIn=3600)       
+                    url_list.append(image_url)
+
         if len(contact_set) == 0:
             return jsonify({
                 'isSuccess': False,
@@ -135,6 +181,7 @@ def messages_contacts():
             return jsonify({
                 'isSuccess': True,
                 'contacts': str(list(contact_set)),
+                'image_url': str(url_list),
             })            
 
     except botocore.exceptions.ClientError as e:
