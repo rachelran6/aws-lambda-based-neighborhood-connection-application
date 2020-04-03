@@ -11,7 +11,6 @@
     <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
     <script src="http://malsup.github.com/jquery.form.js"></script> 
-    <script type="scripts/events."></script>
     
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
   </head>
@@ -156,23 +155,8 @@
             // markEventOnMap(geocoder, map, events[i]['address'])
           }
       }
-      // http://localhost:5000/event?username=test&timestamp=12345
-      // http://localhost:5000/event/?username=eric&timestamp=1606799520
-
-      joinEvent = () => {
-        //TODO: join event back end
-      }
-
-      searchEvent = () => {
-        var value = $(this).val().toLowerCase();
-        $("#myTable tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-      }
 
       $(document).ready(function(){
-        
-
         $.ajax({
           url: "events", 
           type: "GET", 

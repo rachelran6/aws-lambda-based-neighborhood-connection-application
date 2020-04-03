@@ -28,6 +28,7 @@ s3_client = boto3.client('s3')
 BUCKET = "ece1779-a3-pic"
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 
+
 def login_required(view):
     """View decorator that redirects anonymous users to the login page."""
 
@@ -60,19 +61,13 @@ def _authenticate(username, password):
 
     response = table.query(
         KeyConditionExpression=Key('username').eq(
-            username) & Key('start_time').gt(0)
+            username) & Key('start_time').gt(0),
+        FilterExpression=Attr('item_type').eq('account')
     )
 
     print(response)
-    records, user = response['Items'], None
-
-    for r in records:
-        user = r if r['item_type'] == 'account' else None
-
-    assert user is not None, "invalid credential"
-
-    assert bcrypt.checkpw(password.encode('utf-8'),
-                          user['password'].value), "invalid credential"
+    assert len(response['Items']) == 1, "invalid credential"
+    assert password == response['Items'][0]['password'], "invalid credential"
 
 
 @bp.route('/login', methods=['GET', 'POST'])
@@ -110,7 +105,7 @@ def register():
         return render_template('register.html')
 
     try:
-        
+
         username = request.form['username']
         password = request.form['password']
 
@@ -137,14 +132,14 @@ def register():
         if request.files.getlist("image"):
             for photo in request.files.getlist("image"):
                 profile_image = save_image(username, photo)
-        
+
         response = table.put_item(
             Item={
                 'username': username,
                 'start_time': int(datetime.utcnow().strftime('%s')),
-                'password': bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()),
-                'item_type': 'account',
-                'profile_image': profile_image
+                'profile_image': profile_image,
+                'password': password,
+                'item_type': 'account'
             }
         )
 
@@ -158,6 +153,7 @@ def register():
             'isSuccess': False,
             'message': e.args
         })
+
 
 def save_image(username, image):
     extension = image.filename.split('.')[-1]
