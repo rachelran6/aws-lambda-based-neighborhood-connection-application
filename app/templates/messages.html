@@ -128,11 +128,12 @@
                   +'</div>'
                 +'</div>'
                 )
-              }
-              
-              
+              } 
             }
           }
+
+          var objDiv = document.getElementById("show_messages");
+          objDiv.scrollTop = objDiv.scrollHeight;
         },
         error: function(error) {
           console.log(error);
@@ -237,9 +238,8 @@
             data: JSON.stringify(pass_data),
             dataType: 'json',
             success: (result) => {
-              location.reload()
-              // $('#show_contacts').empty();
-              // loadMessages(username, receiver)
+              // location.reload()
+              reloadMessages(username, receiver)
               document.querySelector('.write_msg').value = 'Type a message'
             },
             error: function(error) {
@@ -258,6 +258,78 @@
 
     }
 
+  reloadMessages = (username, receiver) => {
+    var pass_data = {
+      "receiver":receiver,
+      "username":username,
+    }
+    if (receiver != "") {
+      console.log("~~~~~~~~hello")
+      console.log(JSON.stringify(pass_data))
+      $.ajax({
+        type: 'GET',
+        url: '/users/messages',
+        contentType: 'application/json',
+        data: pass_data,
+        dataType: 'json',
+        success: (result) => {
+          $('#show_messages').empty();  
+          for (var key in result['messages']) {
+            console.log(key)
+            var obj = result['messages'][key]
+            console.log(obj)
+            var obj_ =  JSON.parse(obj)
+
+            if (obj_["sender"] == username) {
+              var this_date = new Date(parseInt(key) * 1000);
+              console.log(this_date)
+              $("#show_messages").append(
+                '<div class="outgoing_msg">'
+                  +'<div class="sent_msg">'
+                    +'<p>'+ obj_["message"] +'</p>'
+                    +'<span class="time_date">' + this_date.toDateString() + '</span> </div>'
+                +'</div>'
+              )
+            }
+            else if (obj_["sender"] == receiver){
+              var this_date = new Date(parseInt(key) * 1000);
+              console.log(this_date)
+              if(result['image_url']=="false") {
+                $("#show_messages").append(
+                '<div class="incoming_msg">'
+                  +'<div class="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>'
+                  +'<div class="received_msg">'
+                    +'<div class="received_withd_msg">'
+                      +'<p>' + obj_["message"] + '</p>'
+                      +'<span class="time_date">' + this_date.toDateString() + '</span></div>'
+                  +'</div>'
+                +'</div>'
+                )
+              }
+              else {
+                $("#show_messages").append(
+                '<div class="incoming_msg">'
+                  +'<div class="incoming_msg_img"> <img src="' + result['image_url'] + '" alt="sunil"> </div>'
+                  +'<div class="received_msg">'
+                    +'<div class="received_withd_msg">'
+                      +'<p>' + obj_["message"] + '</p>'
+                      +'<span class="time_date">' + this_date.toDateString() + '</span></div>'
+                  +'</div>'
+                +'</div>'
+                )
+              } 
+            }
+          }
+          var objDiv = document.getElementById("show_messages");
+          objDiv.scrollTop = objDiv.scrollHeight;
+        },
+        error: function(error) {
+          console.log(error);
+        }
+      });
+    }
+  }  
+
     $(document).ready(() => {
       username = document.getElementById("username").value;
       receiver = document.getElementById("receiver").value;
@@ -266,7 +338,6 @@
 
         $('#show_contacts').empty();
         loadMessages(username, receiver)
-
     });
 </script>
 </html>
