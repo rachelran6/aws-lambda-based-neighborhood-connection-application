@@ -155,23 +155,8 @@
             // markEventOnMap(geocoder, map, events[i]['address'])
           }
       }
-      // http://localhost:5000/event?username=test&timestamp=12345
-      // http://localhost:5000/event/?username=eric&timestamp=1606799520
-
-      joinEvent = () => {
-        //TODO: join event back end
-      }
-
-      searchEvent = () => {
-        var value = $(this).val().toLowerCase();
-        $("#myTable tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-      }
 
       $(document).ready(function(){
-        
-
         $.ajax({
           url: "events", 
           type: "GET", 

@@ -59,19 +59,26 @@
                             {% for i in range(event['review']) %}
                                 <span class="fa fa-star checked"></span>
                             {% endfor %}
-
                             {% for i in range(5-event['review']) %}
                                 <span class="fa fa-star"></span>
                             {% endfor %}
                             <br>
                             <i class="fas fa-phone mt-3"></i> <a href="tel:+">{{event['phone_number']}}</a><br>
                             <i class="fa fa-envelope mt-3"></i> <a href="">{{event['email']}}</a><br>
-                            <div class="my-4">
-                                <a href="#" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Message host</a>
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <a href="#" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Message host</a>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <a id="joinEventButton" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Join event</a>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="my-4">
-                                <a href="#" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Join event</a>
-                            </div>
+
+
                         </div>
                     </div>
                 </div>
@@ -82,6 +89,11 @@
                 <a href="#"> University of Toronto ECE1779 Project 3 Winter 2020</a>
             </div>
         </div>
+        <div id="hidden_info">
+            <input id="username" type="hidden" value="{{event['username']}}">
+            <input id="start_time" type="hidden" value="{{event['start_time_int']}}">
+            <input id="end_time" type="hidden" value="{{event['end_time_int']}}">
+        </div>
     </body>
     <script>
         var map;
@@ -91,6 +103,31 @@
             zoom: 8
             });
         }
+        joinEvent = () => {
+            $.ajax({
+                type: 'POST',
+                url: "events/join",
+                data: JSON.stringify({
+                    'start_time': document.getElementById('start_time').value,
+                    'end_time': document.getElementById('end_time').value,
+                    'username': document.getElementById('username').value,
+                }),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: (response) => {
+                    if (response['isSuccess']) {
+                        alert('Joined Event')
+                    } else {
+                        alert(response['message'])
+                    }
+                }
+            });
+        }
+        $( document ).ready(function() {
+            $("#joinEventButton").click(function(){
+                joinEvent()
+            })
+        });
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDbhbcq9vDMMwwl2LG7DE5PQK5Os-hbgSw&callback=initMap"
     async defer></script>

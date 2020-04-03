@@ -151,7 +151,9 @@ def event():
             'start_time': str(datetime.fromtimestamp(event_response['Items'][0]['start_time'])),
             'end_time': str(datetime.fromtimestamp(event_response['Items'][0]['end_time'])),
             'address': event_response['Items'][0]['address'],
-            'title': event_response['Items'][0]['title']
+            'title': event_response['Items'][0]['title'],
+            'start_time_int': event_response['Items'][0]['start_time'],
+            'end_time_int': event_response['Items'][0]['end_time']
         }
         return render_template('event.html', event=event)
     except (botocore.exceptions.ClientError, AssertionError) as e:
