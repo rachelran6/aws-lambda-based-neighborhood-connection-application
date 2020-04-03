@@ -137,7 +137,7 @@ def register():
             Item={
                 'username': username,
                 'start_time': int(datetime.utcnow().strftime('%s')),
-                'profile_image': profile_image
+                'profile_image': profile_image,
                 'password': password,
                 'item_type': 'account'
             }

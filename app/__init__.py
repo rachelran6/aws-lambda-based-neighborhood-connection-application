@@ -123,7 +123,6 @@ def profile():
 @webapp.route('/event', methods=['GET'])
 def event():
     try:
-        print(request.args.get('username'))
         event_response = dynamodb.Table('Events').query(
             KeyConditionExpression=Key('username').eq(
                 request.args.get('username')) &
