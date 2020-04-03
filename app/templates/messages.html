@@ -105,7 +105,8 @@
             else if (obj_["sender"] == receiver){
               var this_date = new Date(parseInt(key) * 1000);
               console.log(this_date)
-              $("#show_messages").append(
+              if(result['image_url']=="false") {
+                $("#show_messages").append(
                 '<div class="incoming_msg">'
                   +'<div class="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>'
                   +'<div class="received_msg">'
@@ -114,7 +115,22 @@
                       +'<span class="time_date">' + this_date.toDateString() + '</span></div>'
                   +'</div>'
                 +'</div>'
-              )
+                )
+              }
+              else {
+                $("#show_messages").append(
+                '<div class="incoming_msg">'
+                  +'<div class="incoming_msg_img"> <img src="' + result['image_url'] + '" alt="sunil"> </div>'
+                  +'<div class="received_msg">'
+                    +'<div class="received_withd_msg">'
+                      +'<p>' + obj_["message"] + '</p>'
+                      +'<span class="time_date">' + this_date.toDateString() + '</span></div>'
+                  +'</div>'
+                +'</div>'
+                )
+              }
+              
+              
             }
           }
         },
@@ -131,13 +147,22 @@
         dataType: 'json',
         success: (result) => {
           var contacts = result['contacts']
+          var image_url = result['image_url']
+          console.log(contacts)
           contacts = contacts.replace(/'/g, '"');
           contacts = JSON.parse(contacts);
           console.log(contacts)
+          console.log(image_url)
+          image_url = image_url.replace(/'/g, '"');
+          image_url = JSON.parse(image_url);
+          console.log(image_url)
           for (var i = 0; i < contacts.length; i++) {
+            console.log("!!!!!!!!!")
+            console.log(image_url[i])
             if(contacts[i] == receiver) {
-              $("#show_contacts").append(
-              '<div class="chat_list active_chat" id="'+contacts[i]+'">'
+              if(image_url[i]=="false") {
+                $("#show_contacts").append(
+                '<div class="chat_list active_chat" id="'+contacts[i]+'">'
                   +'<div class="chat_people">'
                     +'<div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>'
                     +'<div class="chat_ib">'
@@ -145,11 +170,25 @@
                     +'</div>'
                   +'</div>'
                 +'</div>'
-              )
+                )
+              }
+              else {
+                $("#show_contacts").append(
+                '<div class="chat_list active_chat" id="'+contacts[i]+'">'
+                  +'<div class="chat_people">'
+                    +'<div class="chat_img"> <img src="'+ image_url[i] + '" alt="sunil"> </div>'
+                    +'<div class="chat_ib">'
+                      +'<h5>' + contacts[i] +'</h5>'
+                    +'</div>'
+                  +'</div>'
+                +'</div>'
+                )
+              }
             }
             else {
-              $("#show_contacts").append(
-              '<div class="chat_list" id="'+contacts[i]+'">'
+              if(image_url[i]=="false"){
+                $("#show_contacts").append(
+                '<div class="chat_list" id="'+contacts[i]+'">'
                   +'<div class="chat_people">'
                     +'<div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>'
                     +'<div class="chat_ib">'
@@ -157,7 +196,20 @@
                     +'</div>'
                   +'</div>'
                 +'</div>'
-              )
+                )
+              }
+              else {
+                $("#show_contacts").append(
+                  '<div class="chat_list" id="'+contacts[i]+'">'
+                  +'<div class="chat_people">'
+                    +'<div class="chat_img"> <img src="' + image_url[i] + '" alt="sunil"> </div>'
+                    +'<div class="chat_ib">'
+                      +'<h5>' + contacts[i] +'</h5>'
+                    +'</div>'
+                  +'</div>'
+                +'</div>'
+                )
+              }
             }
 
           }
@@ -186,6 +238,8 @@
             dataType: 'json',
             success: (result) => {
               location.reload()
+              // $('#show_contacts').empty();
+              // loadMessages(username, receiver)
               document.querySelector('.write_msg').value = 'Type a message'
             },
             error: function(error) {
@@ -210,6 +264,7 @@
       console.log(username)
       console.log(receiver)
 
+        $('#show_contacts').empty();
         loadMessages(username, receiver)
 
     });

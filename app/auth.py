@@ -13,11 +13,20 @@ from flask import (Blueprint, g, jsonify, redirect, render_template, request,
                    session, url_for)
 
 import app
+import os
+import io
+import shutil
+import time
+from PIL import Image
+import numpy as np
+import cv2
 
 bp = Blueprint("auth", __name__, url_prefix='/auth')
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 table = dynamodb.Table('Events')
-
+s3_client = boto3.client('s3')
+BUCKET = "ece1779-a3-pic"
+APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 def login_required(view):
     """View decorator that redirects anonymous users to the login page."""
@@ -101,7 +110,7 @@ def register():
         return render_template('register.html')
 
     try:
-
+        
         username = request.form['username']
         password = request.form['password']
 
@@ -117,18 +126,28 @@ def register():
         "Password should have 6 to 18 characters"
 
         response = table.query(
-            KeyConditionExpression=Key('username').eq(username)
+            KeyConditionExpression=Key('username').eq(username),
+            # in order to test
+            FilterExpression=Attr('item_type').eq('account')
         )
         assert len(response['Items']) == 0, "username exists"
 
+        profile_image = "profile image"
+
+        if request.files.getlist("image"):
+            for photo in request.files.getlist("image"):
+                profile_image = save_image(username, photo)
+        
         response = table.put_item(
             Item={
                 'username': username,
                 'start_time': int(datetime.utcnow().strftime('%s')),
                 'password': bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()),
-                'item_type': 'account'
+                'item_type': 'account',
+                'profile_image': profile_image
             }
         )
+
         return jsonify({
             'isSuccess': True,
             'url': url_for('auth.login')
@@ -139,3 +158,31 @@ def register():
             'isSuccess': False,
             'message': e.args
         })
+
+def save_image(username, image):
+    extension = image.filename.split('.')[-1]
+    assert extension.lower() in set(
+        ["bmp", "pbm", "pgm", "ppm", "sr", "ras", "jpeg", "jpg", "jpe", "jp2", "tiff", "tif", "png"]), \
+        "Unsupported format "
+
+    target = os.path.join(APP_ROOT, 'static/uploaded_images')
+
+    if not os.path.isdir(target):
+        os.mkdir(target)
+
+    timestamp = str(int(time.time()))
+    filename = username + "_" + timestamp + "." + extension
+
+    image_path = "/".join([target, filename])
+    # save images to file "uploaded_images"
+    image.save(image_path)
+    im_thumb = Image.open(image_path)
+    im_thumb.thumbnail((256, 256), Image.ANTIALIAS)
+    thumb_filename = username + "_" + timestamp + "_thumb" + "." + extension
+    thumb_path = "/".join([target, thumb_filename])
+    im_thumb.save(thumb_path)
+    s3_client.upload_file(thumb_path, BUCKET, thumb_filename)
+
+    shutil.rmtree(target)
+
+    return thumb_filename
