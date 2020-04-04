@@ -8,9 +8,9 @@ from botocore.exceptions import ClientError
 from flask import (Blueprint, flash, jsonify, redirect, render_template,
                    request, session, url_for)
 
-from app.auth import login_required
-
 import app
+
+from .auth import login_required
 
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 dynamodb_client = boto3.client('dynamodb', region_name='us-east-1')
@@ -18,8 +18,8 @@ table = dynamodb.Table('Events')
 bp = Blueprint("events", __name__, url_prefix='/events')
 
 
-@login_required
 @bp.route('/', methods=['GET', 'POST'])
+@login_required
 def events():
     try:
         if request.method == 'GET':
@@ -55,24 +55,19 @@ def events():
         })
 
 
-@login_required
 @bp.route('/join', methods=['POST'])
+@login_required
 def join():
     try:
-        print('joined event1')
         username = session.get('username')
         start_time = int(request.get_json()['start_time'])
         end_time = int(request.get_json()['end_time'])
-
         response_host = table.query(
             KeyConditionExpression=Key('username').eq(username))
 
         for i in response_host["Items"]:
             if i['item_type'] != 'account' \
                     and _is_conflict(int(i["start_time"]), int(i["end_time"]), start_time, end_time):
-                print(i)
-                print(start_time)
-                print(end_time)
                 return jsonify({
                     'isSuccess': False,
                     'message': 'you have a time conflict'
@@ -84,7 +79,6 @@ def join():
                 'end_time': end_time,
                 'item_type': 'participant',
             })
-        print('joined event3')
         return jsonify({
             'isSucess': True
         })
@@ -96,6 +90,7 @@ def join():
 
 
 @bp.route('/rate', methods=['POST'])
+@login_required
 def rate():
     response = table.update_item(
         Key={
@@ -112,6 +107,7 @@ def rate():
 
 
 @bp.route('/drop', methods=['POST'])
+@login_required
 def dropout():
     try:
         table.delete_item(

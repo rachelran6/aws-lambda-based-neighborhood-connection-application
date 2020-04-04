@@ -2,13 +2,13 @@ import decimal
 from datetime import datetime
 
 import boto3
-
 import botocore
-from flask import Flask, render_template, request, jsonify
-from boto3.dynamodb.conditions import Key, Attr
+from boto3.dynamodb.conditions import Attr, Key
+from flask import Flask, jsonify, render_template, request
 
 from app import auth, events, users
-from app.auth import login_required
+
+from .auth import login_required
 
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 dynamodb_client = boto3.client('dynamodb', region_name='us-east-1')
@@ -18,9 +18,9 @@ webapp = Flask(__name__, instance_relative_config=True)
 webapp.secret_key = 'super secret key'
 
 
-webapp.register_blueprint(auth.bp)
 webapp.register_blueprint(events.bp)
 webapp.register_blueprint(users.bp)
+webapp.register_blueprint(auth.bp)
 
 table_name = 'Events'
 table_names = [table.name for table in dynamodb.tables.all()]
@@ -81,14 +81,14 @@ if table_name not in table_names:
     )
 
 
-@login_required
 @webapp.route('/', methods=['GET'])
+@login_required
 def index():
     return render_template('index.html')
 
 
-@login_required
 @webapp.route('/profile', methods=['GET'])
+@login_required
 def profile():
     profile = {
         'username': 'maxxx580',
@@ -123,8 +123,8 @@ def profile():
     return render_template('profile.html', profile=profile)
 
 
-@login_required
 @webapp.route('/event', methods=['GET'])
+@login_required
 def event():
     try:
         event_response = dynamodb.Table('Events').query(
@@ -166,6 +166,7 @@ def event():
 
 
 @webapp.route('/users/message', methods=['GET'])
+@login_required
 def messages():
     username = "eric"
     receiver = "sara"
