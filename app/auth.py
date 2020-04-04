@@ -64,7 +64,7 @@ def _authenticate(username, password):
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == "GET":
-        return render_template('login.html')
+        return render_template('login.html', urls={'login': url_for('auth.login')})
 
     try:
         username = request.form['username']
@@ -93,7 +93,7 @@ def login():
 def register():
 
     if request.method == 'GET':
-        return render_template('register.html')
+        return render_template('register.html', urls={'register': url_for('auth.register')})
 
     try:
 
