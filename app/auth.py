@@ -1,8 +1,13 @@
 import decimal
 import functools
+import io
 import logging
+import os
 import re
+import shutil
+import time
 from datetime import datetime
+from functools import wraps
 
 import bcrypt
 import boto3
@@ -11,17 +16,11 @@ from boto3.dynamodb.conditions import Attr, Key
 from botocore.exceptions import ClientError
 from flask import (Blueprint, g, jsonify, redirect, render_template, request,
                    session, url_for)
+from PIL import Image
 
 import app
-import os
-import io
-import shutil
-import time
-from PIL import Image
-import numpy as np
-import cv2
 
-bp = Blueprint("auth", __name__, url_prefix='/auth')
+bp = Blueprint("auth", __name__)
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 table = dynamodb.Table('Events')
 s3_client = boto3.client('s3')
@@ -29,25 +28,18 @@ BUCKET = "ece1779-a3-pic"
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 
-def login_required(view):
-    """View decorator that redirects anonymous users to the login page."""
-
-    @functools.wraps(view)
-    def wrapped_view(**kwargs):
-        logger = logging.getLogger('manager')
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
         if g.user is None:
-            logger.info("user yet logged in, redirecting log-in page")
-            return redirect(url_for("auth.login"))
-        logger.info('user already logged in')
-        return view(**kwargs)
-    return wrapped_view
+            return redirect(url_for('auth.login'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 @bp.before_app_request
 def load_logged_in_user():
-
     username = session.get('username')
-
     if username is None:
         g.user = None
 
@@ -65,7 +57,6 @@ def _authenticate(username, password):
         FilterExpression=Attr('item_type').eq('account')
     )
 
-    print(response)
     assert len(response['Items']) == 1, "invalid credential"
     assert password == response['Items'][0]['password'], "invalid credential"
 
@@ -73,7 +64,7 @@ def _authenticate(username, password):
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == "GET":
-        return render_template('login.html')
+        return render_template('login.html', urls={'login': url_for('auth.login')})
 
     try:
         username = request.form['username']
@@ -102,7 +93,7 @@ def login():
 def register():
 
     if request.method == 'GET':
-        return render_template('register.html')
+        return render_template('register.html', urls={'register': url_for('auth.register')})
 
     try:
 
@@ -139,7 +130,9 @@ def register():
                 'start_time': int(datetime.utcnow().strftime('%s')),
                 'profile_image': profile_image,
                 'password': password,
-                'item_type': 'account'
+                'item_type': 'account',
+                'email': request.form['email'],
+                'phone_number': request.form['phone_number']
             }
         )
 
@@ -182,3 +175,26 @@ def save_image(username, image):
     shutil.rmtree(target)
 
     return thumb_filename
+
+
+@bp.route('/logout', methods=['GET', 'POST'])
+@login_required
+def logout():
+    """[summary] this endpoint accepts a POST request and logs out an user
+    Returns:
+        [type] -- [description] this endpoint returns json result
+        {
+            isSuccess: boolean indecating if logout is successful,
+            message: error message if applicable
+        }
+    """
+    try:
+        session.clear()
+        return jsonify({
+            "isSuccess": True
+        })
+    except:
+        return jsonify({
+            'isSuccess': False,
+            'message': 'Logout Failed'
+        })

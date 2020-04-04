@@ -14,7 +14,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
-    <script src="http://malsup.github.com/jquery.form.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.2/jquery.form.min.js"></script> 
 
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css">
 </head>
@@ -25,7 +25,7 @@
                 <p class="text-center">Get started with your free account</p>
                 <p class="divider-text"><span class="bg-light"></span></p>
 
-                <form id="registerForm" action="/register" method="POST">
+                <form id="registerForm" method="POST">
                 <div class="row">
                     <div class="col">
                             <div class="form-group">
@@ -37,7 +37,6 @@
                             </div>        
                     </div>
                 </div>
-                
                     <div class="form-group input-group">
                         <div class="input-group-prepend"><span class="input-group-text"> <i class="fa fa-user"></i> </span></div>
                         <input name="username" class="form-control" placeholder="Username" type="text" required/>
@@ -45,8 +44,15 @@
                     <div class="form-group input-group">
                         <div class="input-group-prepend"><span class="input-group-text"> <i class="fa fa-lock"></i> </span></div>
                         <input name="password" class="form-control" placeholder="Create password" type="password" required/>
+                    </div>  
+                    <div class="form-group input-group">
+                        <div class="input-group-prepend"><span class="input-group-text"> <i class="fa fa-user"></i> </span></div>
+                        <input name="email" class="form-control" placeholder="email" type="text" required/>
                     </div> 
-                                            
+                    <div class="form-group input-group">
+                        <div class="input-group-prepend"><span class="input-group-text"> <i class="fa fa-user"></i> </span></div>
+                        <input name="phone_number" class="form-control" placeholder="phone number" type="text" required/>
+                    </div>                             
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary btn-block"> Create Account  </button>
                     </div> 
@@ -69,7 +75,7 @@
     $(document).ready(() => {
         $('#registerForm')
             .ajaxForm({
-                url : "register",
+                url : '{{urls["register"]}}',
                 dataType : "json",
                 type: "POST",
                 success : function (response) {

@@ -10,6 +10,8 @@ from flask import (Blueprint, flash, jsonify, redirect, render_template,
 
 import app
 
+from .auth import login_required
+
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 dynamodb_client = boto3.client('dynamodb', region_name='us-east-1')
 table = dynamodb.Table('Events')
@@ -17,6 +19,7 @@ bp = Blueprint("events", __name__, url_prefix='/events')
 
 
 @bp.route('/', methods=['GET', 'POST'])
+@login_required
 def events():
     try:
         if request.method == 'GET':
@@ -29,7 +32,6 @@ def events():
                 'data': response['Items']
             }, default=app.decimal_default)
         if request.method == "POST":
-            print(request.form['event_type'])
             table.put_item(
                 Item={
                     'username': session.get('username'),
@@ -54,13 +56,12 @@ def events():
 
 
 @bp.route('/join', methods=['POST'])
+@login_required
 def join():
     try:
-        print('joined event1')
-        username = request.get_json()['username']
+        username = session.get('username')
         start_time = int(request.get_json()['start_time'])
         end_time = int(request.get_json()['end_time'])
-
         response_host = table.query(
             KeyConditionExpression=Key('username').eq(username))
 
@@ -78,7 +79,6 @@ def join():
                 'end_time': end_time,
                 'item_type': 'participant',
             })
-        print('joined event3')
         return jsonify({
             'isSucess': True
         })
@@ -90,6 +90,7 @@ def join():
 
 
 @bp.route('/rate', methods=['POST'])
+@login_required
 def rate():
     response = table.update_item(
         Key={
@@ -106,6 +107,7 @@ def rate():
 
 
 @bp.route('/drop', methods=['POST'])
+@login_required
 def dropout():
     try:
         table.delete_item(
