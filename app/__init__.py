@@ -8,6 +8,7 @@ from flask import Flask, render_template, request, jsonify
 from boto3.dynamodb.conditions import Key, Attr
 
 from app import auth, events, users
+from app.auth import login_required
 
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 dynamodb_client = boto3.client('dynamodb', region_name='us-east-1')
@@ -80,11 +81,13 @@ if table_name not in table_names:
     )
 
 
+@login_required
 @webapp.route('/', methods=['GET'])
 def index():
     return render_template('index.html')
 
 
+@login_required
 @webapp.route('/profile', methods=['GET'])
 def profile():
     profile = {
@@ -120,6 +123,7 @@ def profile():
     return render_template('profile.html', profile=profile)
 
 
+@login_required
 @webapp.route('/event', methods=['GET'])
 def event():
     try:
@@ -133,7 +137,7 @@ def event():
                 request.args.get('username')),
             FilterExpression=Attr('item_type').eq("account")
         )
-        review_response = dynamodb.Table('Events').query(
+        participants = dynamodb.Table('Events').query(
             KeyConditionExpression=Key('username').eq(
                 request.args.get('username')) &
             Key('start_time').eq(int(request.args.get('timestamp'))),
@@ -152,7 +156,9 @@ def event():
             'address': event_response['Items'][0]['address'],
             'title': event_response['Items'][0]['title'],
             'start_time_int': event_response['Items'][0]['start_time'],
-            'end_time_int': event_response['Items'][0]['end_time']
+            'end_time_int': event_response['Items'][0]['end_time'],
+            'participant_count': len(participants['Items']),
+            'required_participant_count': event_response['Items'][0]['required_parti_num']
         }
         return render_template('event.html', event=event)
     except (botocore.exceptions.ClientError, AssertionError) as e:

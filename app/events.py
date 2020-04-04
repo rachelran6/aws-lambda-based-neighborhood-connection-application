@@ -8,6 +8,8 @@ from botocore.exceptions import ClientError
 from flask import (Blueprint, flash, jsonify, redirect, render_template,
                    request, session, url_for)
 
+from app.auth import login_required
+
 import app
 
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
@@ -16,6 +18,7 @@ table = dynamodb.Table('Events')
 bp = Blueprint("events", __name__, url_prefix='/events')
 
 
+@login_required
 @bp.route('/', methods=['GET', 'POST'])
 def events():
     try:
@@ -29,7 +32,6 @@ def events():
                 'data': response['Items']
             }, default=app.decimal_default)
         if request.method == "POST":
-            print(request.form['event_type'])
             table.put_item(
                 Item={
                     'username': session.get('username'),
@@ -53,11 +55,12 @@ def events():
         })
 
 
+@login_required
 @bp.route('/join', methods=['POST'])
 def join():
     try:
         print('joined event1')
-        username = request.get_json()['username']
+        username = session.get('username')
         start_time = int(request.get_json()['start_time'])
         end_time = int(request.get_json()['end_time'])
 
@@ -67,6 +70,9 @@ def join():
         for i in response_host["Items"]:
             if i['item_type'] != 'account' \
                     and _is_conflict(int(i["start_time"]), int(i["end_time"]), start_time, end_time):
+                print(i)
+                print(start_time)
+                print(end_time)
                 return jsonify({
                     'isSuccess': False,
                     'message': 'you have a time conflict'

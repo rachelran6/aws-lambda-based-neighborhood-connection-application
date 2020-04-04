@@ -4,14 +4,13 @@
     <title>Neighboor</title>
     <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8">
-    <link rel="shortcut icon" type="image/png" href="favicon_io/favicon-32x32.png"/>
+    <link rel="shortcut icon" type="image/png" href="dev/favicon_io/favicon-32x32.png"/>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
-    <script src="http://malsup.github.com/jquery.form.js"></script> 
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.2/jquery.form.min.js"></script> 
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
   </head>
   <body>
@@ -142,10 +141,10 @@
       loadEventTable = (events) => {
           var geocoder = new google.maps.Geocoder();
           for (var i =0; i < events.length; i += 1) {
-            var start_time = Date(events[i]['start_time'])
-            var end_time = Date(events[i]['end_time'])
+            var start_time = new Date(events[i]['start_time'] * 1000)
+            var end_time = new Date(events[i]['end_time'] * 1000)
             $("#eventTable > tbody").append('<tr>'+
-                                            '<td> <a href="event?username='+events[i]['username']+'&timestamp='+events[i]['start_time']+'">' + events[i]['title'] + '</a></td>' + 
+                                            '<td> <a href="' + window.location.href + '/event?username='+events[i]['username']+'&timestamp='+events[i]['start_time']+'">' + events[i]['title'] + '</a></td>' + 
                                             '<td>' + events[i]['event_type'] + '</td>' + 
                                             '<td>' + events[i]['address'] + '</td>' + 
                                             '<td>' + start_time + '</td>' +
@@ -158,7 +157,7 @@
 
       $(document).ready(function(){
         $.ajax({
-          url: "events", 
+          url: window.location.href + "/events", 
           type: "GET", 
           success: function(result) {
               var response = JSON.parse(result);
@@ -169,7 +168,7 @@
 
         $('#eventCreateFrom')
             .ajaxForm({
-                url : "events",
+                url : window.location.href + "/events",
                 dataType : "json",
                 type: "POST",
                 success : function (response) {

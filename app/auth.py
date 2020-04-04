@@ -18,8 +18,7 @@ import io
 import shutil
 import time
 from PIL import Image
-import numpy as np
-import cv2
+
 
 bp = Blueprint("auth", __name__, url_prefix='/auth')
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
@@ -139,7 +138,9 @@ def register():
                 'start_time': int(datetime.utcnow().strftime('%s')),
                 'profile_image': profile_image,
                 'password': password,
-                'item_type': 'account'
+                'item_type': 'account',
+                'email': request.form['email'],
+                'phone_number': request.form['phone_number']
             }
         )
 
