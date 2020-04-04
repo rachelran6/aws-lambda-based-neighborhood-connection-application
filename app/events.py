@@ -10,7 +10,6 @@ from flask import (Blueprint, flash, jsonify, redirect, render_template,
                    request, session, url_for)
 
 import app
-from app import reminder
 
 import json
 from datetime import datetime
