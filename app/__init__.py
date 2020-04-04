@@ -127,7 +127,10 @@ def profile():
         'messages': url_for('messages'),
         'profile': url_for('profile')
     }
-    return render_template('profile.html', profile=profile, urls=urls, show_time=datetime.fromtimestamp)
+    return render_template('profile.html',
+                           profile=profile,
+                           urls=urls,
+                           show_time=datetime.fromtimestamp)
 
 
 @webapp.route('/event', methods=['GET'])
@@ -189,11 +192,14 @@ def messages():
     receiver = ''
     if 'receiver' in request.args:
         receiver = request.args.get('receiver')
-    return render_template('messages.html', username=username, receiver=receiver, urls={
-        'events': url_for('index'),
-        'messages': url_for('messages'),
-        'profile': url_for('profile')
-    })
+    return render_template('messages.html',
+                           username=username,
+                           receiver=receiver,
+                           urls={
+                               'events': url_for('index'),
+                               'messages': url_for('messages'),
+                               'profile': url_for('profile')
+                           })
 
 
 def decimal_default(obj):
