@@ -40,7 +40,7 @@ def events():
         if request.method == "POST":
             table.put_item(
                 Item={
-                    'username': 'eric',#session.get('username'),
+                    'username': session.get('username'),
                     'start_time': int(datetime.fromisoformat(request.form['start_time']).timestamp()),
                     'end_time': int(datetime.fromisoformat(request.form['end_time']).timestamp()),
                     'title': request.form['title'],

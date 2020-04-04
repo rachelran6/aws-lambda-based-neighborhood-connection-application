@@ -56,7 +56,9 @@ def _authenticate(username, password):
     )
 
     assert len(response['Items']) == 1, "invalid credential"
-    assert password == response['Items'][0]['password'], "invalid credential"
+    #assert password == response['Items'][0]['password'], "invalid credential"
+    assert bcrypt.checkpw(password.encode('utf-8'),
+                          response['Items'][0]['password'].encode('utf-8')), "invalid credential"
 
 
 @bp.route('/login', methods=['GET', 'POST'])
