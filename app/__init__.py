@@ -98,41 +98,36 @@ def index():
 @webapp.route('/profile', methods=['GET'])
 @login_required
 def profile():
+    username = g.user
+    table = dynamodb.Table('Events')
+    host_response = table.query(
+        KeyConditionExpression=Key('username').eq(username),
+        FilterExpression=Attr('item_type').eq('account')
+    )
+
+    hosted_events_response = table.query(
+        KeyConditionExpression=Key('username').eq(username),
+        FilterExpression=Attr('item_type').eq('host')
+    )
+
+    joined_events_response = table.query(
+        KeyConditionExpression=Key('username').eq(username),
+        FilterExpression=Attr('item_type').eq('participant')
+    )
     profile = {
-        'username': 'maxxx580',
-        'self': True,
-        'joined_events': [{
-            'title': 'event title 1',
-            'address': '215 queen',
-            'start_time': datetime.utcnow(),
-            'end_time': '123345667',
-            'rating': '4'
-        }],
-        'hosted_events': [{
-            'title': 'event title 2',
-            'address': '225 queen',
-            'start_time': datetime.utcnow(),
-            'end_time': '123345667',
-            'rating': '4'
-        }],
-        'messages': [
-            {
-                'from': 'user 1',
-                'time': datetime.utcnow(),
-                'text': 'message 1'
-            },
-            {
-                'from': 'user 2',
-                'time': datetime.utcnow(),
-                'text': 'message 2'
-            }
-        ]
+        'username': username,
+        'email':  host_response['Items'][0]['email'],
+        'number':  host_response['Items'][0]['phone_number'],
+        'image_url': 'test',
+        'hosted_events': hosted_events_response['Items'],
+        'joined_events': joined_events_response['Items']
     }
-    return render_template('profile.html', profile=profile, urls={
+    urls = {
         'events': url_for('index'),
         'messages': url_for('messages'),
         'profile': url_for('profile')
-    })
+    }
+    return render_template('profile.html', profile=profile, urls=urls, show_time=datetime.fromtimestamp)
 
 
 @webapp.route('/event', methods=['GET'])
