@@ -5,7 +5,8 @@ import boto3
 import botocore
 from boto3.dynamodb.conditions import Attr, Key
 from flask import Flask, g, jsonify, render_template, request, url_for
-
+from boto3.dynamodb.conditions import Key
+from flask import Flask, render_template, request
 from app import auth, events, users
 
 from .auth import login_required
@@ -78,6 +79,9 @@ if table_name not in table_names:
             }
         ]
     )
+
+
+
 
 
 @webapp.route('/', methods=['GET'])

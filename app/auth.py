@@ -52,9 +52,7 @@ def _authenticate(username, password):
     assert password is not None, "invalid password"
 
     response = table.query(
-        KeyConditionExpression=Key('username').eq(
-            username) & Key('start_time').gt(0),
-        FilterExpression=Attr('item_type').eq('account')
+        KeyConditionExpression=Key('username').eq(username) & Key('start_time').lt(0)
     )
 
     assert len(response['Items']) == 1, "invalid credential"
@@ -99,6 +97,7 @@ def register():
 
         username = request.form['username']
         password = request.form['password']
+        email = request.form['email']
 
         assert username is not None, "Please enter username"
         assert password is not None, "Please enter password"
@@ -127,12 +126,12 @@ def register():
         response = table.put_item(
             Item={
                 'username': username,
-                'start_time': int(datetime.utcnow().strftime('%s')),
-                'profile_image': profile_image,
-                'password': password,
-                'item_type': 'account',
+                'start_time': -1,
                 'email': request.form['email'],
-                'phone_number': request.form['phone_number']
+                'phone_number': request.form['phone_number'],
+                'password': bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()),
+                'item_type': 'account',
+                'profile_image': profile_image,
             }
         )
 
