@@ -6,7 +6,9 @@ import botocore
 from boto3.dynamodb.conditions import Attr, Key
 from flask import Flask, g, jsonify, render_template, request, url_for
 
-from app import auth, events, users
+
+
+from app import auth, events, users, reminder
 
 from .auth import login_required
 
@@ -78,6 +80,13 @@ if table_name not in table_names:
             }
         ]
     )
+
+
+scheduler = BackgroundScheduler()
+scheduler.start()
+
+scheduler.add_job(func=reminder.check_event,
+                  trigger='interval', seconds=15)
 
 
 @webapp.route('/', methods=['GET'])

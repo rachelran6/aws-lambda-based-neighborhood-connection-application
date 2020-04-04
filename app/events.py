@@ -5,9 +5,15 @@ import boto3
 import botocore
 from boto3.dynamodb.conditions import Attr, Key
 from botocore.exceptions import ClientError
+
 from flask import (Blueprint, flash, jsonify, redirect, render_template,
                    request, session, url_for)
 
+import app
+from app import reminder
+
+import json
+from datetime import datetime
 import app
 
 from .auth import login_required
@@ -21,6 +27,7 @@ bp = Blueprint("events", __name__, url_prefix='/events')
 @bp.route('/', methods=['GET', 'POST'])
 @login_required
 def events():
+
     try:
         if request.method == 'GET':
             response = table.query(
@@ -34,7 +41,7 @@ def events():
         if request.method == "POST":
             table.put_item(
                 Item={
-                    'username': session.get('username'),
+                    'username': 'eric',#session.get('username'),
                     'start_time': int(datetime.fromisoformat(request.form['start_time']).timestamp()),
                     'end_time': int(datetime.fromisoformat(request.form['end_time']).timestamp()),
                     'title': request.form['title'],
@@ -48,11 +55,13 @@ def events():
                 'isSuccess': True,
                 'url': url_for('index')
             })
+
     except (botocore.exceptions.ClientError, AssertionError) as e:
         return jsonify({
             'isSucess': False,
             'message': e.args
         })
+
 
 
 @bp.route('/join', methods=['POST'])
