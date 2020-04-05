@@ -4,17 +4,18 @@
         <title>Event Details</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <link rel="shortcut icon" type="image/png" href="favicon_io/favicon-32x32.png"/>
+        <link rel="shortcut icon" type="image/png" href="{{ url_for('static',filename='favicon/favicon.ico') }}"/>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <script src="{{ url_for('static',filename='scripts/util.js') }}"></script>
 
     </head>
     <body>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">Neighborhood</a>
+        <a class="navbar-brand" href="{{urls['events']}}">Neighborhood</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -148,6 +149,9 @@
             $("#joinEventButton").click(function(){
                 joinEvent()
             })
+            $("#logoutButton").click(function(){
+                logout("{{url_for('auth.logout')}}")
+      });
         });
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDbhbcq9vDMMwwl2LG7DE5PQK5Os-hbgSw&callback=initMap"
