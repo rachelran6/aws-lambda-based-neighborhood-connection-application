@@ -53,10 +53,10 @@ def _authenticate(username, password):
 
     response = table.query(
         KeyConditionExpression=Key('username').eq(
-            username) & Key('start_time').lt(0)
+            username),
+        FilterExpression=Attr('item_type').eq('account')
     )
 
-    assert len(response['Items']) == 1, "invalid credential"
     assert password == response['Items'][0]['password'], "invalid credential"
 
 
@@ -127,10 +127,10 @@ def register():
         response = table.put_item(
             Item={
                 'username': username,
-                'start_time': -1,
+                'start_time': int(datetime.utcnow().strftime("%s")),
                 'email': request.form['email'],
                 'phone_number': request.form['phone_number'],
-                'password': bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()),
+                'password': password,
                 'item_type': 'account',
                 'profile_image': profile_image,
             }
