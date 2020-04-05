@@ -24,6 +24,7 @@ bp = Blueprint("auth", __name__)
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 table = dynamodb.Table('Events')
 s3_client = boto3.client('s3')
+s3 = boto3.resource('s3')
 BUCKET = "ece1779-a3-pic"
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 
@@ -154,27 +155,12 @@ def save_image(username, image):
         ["bmp", "pbm", "pgm", "ppm", "sr", "ras", "jpeg", "jpg", "jpe", "jp2", "tiff", "tif", "png"]), \
         "Unsupported format "
 
-    target = os.path.join(APP_ROOT, 'static/uploaded_images')
-
-    if not os.path.isdir(target):
-        os.mkdir(target)
-
     timestamp = str(int(time.time()))
     filename = username + "_" + timestamp + "." + extension
 
-    image_path = "/".join([target, filename])
-    # save images to file "uploaded_images"
-    image.save(image_path)
-    im_thumb = Image.open(image_path)
-    im_thumb.thumbnail((256, 256), Image.ANTIALIAS)
-    thumb_filename = username + "_" + timestamp + "_thumb" + "." + extension
-    thumb_path = "/".join([target, thumb_filename])
-    im_thumb.save(thumb_path)
-    s3_client.upload_file(thumb_path, BUCKET, thumb_filename)
+    s3.Object(BUCKET, filename).put(Body=image.read())
 
-    shutil.rmtree(target)
-
-    return thumb_filename
+    return filename
 
 
 @bp.route('/logout', methods=['GET', 'POST'])

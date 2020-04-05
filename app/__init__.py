@@ -13,7 +13,8 @@ from .auth import login_required
 
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 dynamodb_client = boto3.client('dynamodb', region_name='us-east-1')
-
+s3_client = boto3.client('s3')
+BUCKET = "ece1779-a3-pic"
 
 webapp = Flask(__name__, instance_relative_config=True)
 webapp.secret_key = 'super secret key'
@@ -114,11 +115,31 @@ def profile():
         KeyConditionExpression=Key('username').eq(username),
         FilterExpression=Attr('item_type').eq('participant')
     )
+
+    response = table.query(
+        IndexName="item_type_index",
+        KeyConditionExpression=Key('item_type').eq('account'),
+        FilterExpression=Attr('username').eq(username)
+    )
+
+    if response["Items"]:
+        for i in response["Items"]:
+            if str(i["profile_image"]) == "profile image":
+                image_url = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS52y5aInsxSm31CvHOFHWujqUx_wWTS9iM6s7BAm21oEN_RiGoog"
+            else:
+                image_name = str(i["profile_image"])
+                image_url = s3_client.generate_presigned_url('get_object',
+                                                                Params={
+                                                                 'Bucket': BUCKET,
+                                                                 'Key': image_name,
+                                                                 },
+                                                             ExpiresIn=3600)
+
     profile = {
         'username': username,
         'email':  host_response['Items'][0]['email'],
         'number':  host_response['Items'][0]['phone_number'],
-        'image_url': 'test',
+        'image_url': image_url,
         'hosted_events': hosted_events_response['Items'],
         'joined_events': joined_events_response['Items']
     }
