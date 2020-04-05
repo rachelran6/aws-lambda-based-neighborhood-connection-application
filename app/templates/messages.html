@@ -48,10 +48,10 @@
                 <div class="msg_history" id="show_messages">
                 </div>
                 <div class="type_msg">
-                  <div class="input_msg_write">
+                  <!-- <div class="input_msg_write">
                     <input type="text" class="write_msg" placeholder="Type a message" id="msg_to_be_sent"/>
                     <button class="msg_send_btn" type="button" id="msg_send_btn_id"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
-                  </div>
+                  </div> -->
                 </div>
               </div>
             </div>
@@ -125,6 +125,13 @@
             }
           }
 
+          $("#type_msg").append(
+            '<div class="input_msg_write">'
+              +'<input type="text" class="write_msg" placeholder="Type a message" id="msg_to_be_sent"/>'
+                +'<button class="msg_send_btn" type="button" id="msg_send_btn_id"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>'
+                  +'</div>'
+          )
+
           var objDiv = document.getElementById("show_messages");
           objDiv.scrollTop = objDiv.scrollHeight;
         },
@@ -140,72 +147,74 @@
         data: pass_data0,
         dataType: 'json',
         success: (result) => {
-          var contacts = result['contacts']
-          var image_url = result['image_url']
-          console.log(contacts)
-          contacts = contacts.replace(/'/g, '"');
-          contacts = JSON.parse(contacts);
-          console.log(contacts)
-          console.log(image_url)
-          image_url = image_url.replace(/'/g, '"');
-          image_url = JSON.parse(image_url);
-          console.log(image_url)
-          for (var i = 0; i < contacts.length; i++) {
-            console.log("!!!!!!!!!")
-            console.log(image_url[i])
-            if(contacts[i] == receiver) {
-              if(image_url[i]=="false") {
-                $("#show_contacts").append(
-                '<div class="chat_list active_chat" id="'+contacts[i]+'">'
-                  +'<div class="chat_people">'
-                    +'<div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>'
-                    +'<div class="chat_ib">'
-                      +'<h5>' + contacts[i] +'</h5>'
+          if (result['isSuccess'] != false) {
+            var contacts = result['contacts']
+            var image_url = result['image_url']
+            console.log(contacts)
+            contacts = contacts.replace(/'/g, '"');
+            contacts = JSON.parse(contacts);
+            console.log(contacts)
+            console.log(image_url)
+            image_url = image_url.replace(/'/g, '"');
+            image_url = JSON.parse(image_url);
+            console.log(image_url)
+            for (var i = 0; i < contacts.length; i++) {
+              console.log("!!!!!!!!!")
+              console.log(image_url[i])
+              if(contacts[i] == receiver) {
+                if(image_url[i]=="false") {
+                  $("#show_contacts").append(
+                  '<div class="chat_list active_chat" id="'+contacts[i]+'">'
+                    +'<div class="chat_people">'
+                      +'<div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>'
+                      +'<div class="chat_ib">'
+                        +'<h5>' + contacts[i] +'</h5>'
+                      +'</div>'
                     +'</div>'
                   +'</div>'
-                +'</div>'
-                )
+                  )
+                }
+                else {
+                  $("#show_contacts").append(
+                  '<div class="chat_list active_chat" id="'+contacts[i]+'">'
+                    +'<div class="chat_people">'
+                      +'<div class="chat_img"> <img src="'+ image_url[i] + '" alt="sunil"> </div>'
+                      +'<div class="chat_ib">'
+                        +'<h5>' + contacts[i] +'</h5>'
+                      +'</div>'
+                    +'</div>'
+                  +'</div>'
+                  )
+                }
               }
               else {
-                $("#show_contacts").append(
-                '<div class="chat_list active_chat" id="'+contacts[i]+'">'
-                  +'<div class="chat_people">'
-                    +'<div class="chat_img"> <img src="'+ image_url[i] + '" alt="sunil"> </div>'
-                    +'<div class="chat_ib">'
-                      +'<h5>' + contacts[i] +'</h5>'
-                    +'</div>'
-                  +'</div>'
-                +'</div>'
-                )
-              }
-            }
-            else {
-              if(image_url[i]=="false"){
-                $("#show_contacts").append(
-                '<div class="chat_list" id="'+contacts[i]+'">'
-                  +'<div class="chat_people">'
-                    +'<div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>'
-                    +'<div class="chat_ib">'
-                      +'<h5>' + contacts[i] +'</h5>'
-                    +'</div>'
-                  +'</div>'
-                +'</div>'
-                )
-              }
-              else {
-                $("#show_contacts").append(
+                if(image_url[i]=="false"){
+                  $("#show_contacts").append(
                   '<div class="chat_list" id="'+contacts[i]+'">'
-                  +'<div class="chat_people">'
-                    +'<div class="chat_img"> <img src="' + image_url[i] + '" alt="sunil"> </div>'
-                    +'<div class="chat_ib">'
-                      +'<h5>' + contacts[i] +'</h5>'
+                    +'<div class="chat_people">'
+                      +'<div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>'
+                      +'<div class="chat_ib">'
+                        +'<h5>' + contacts[i] +'</h5>'
+                      +'</div>'
                     +'</div>'
                   +'</div>'
-                +'</div>'
-                )
+                  )
+                }
+                else {
+                  $("#show_contacts").append(
+                    '<div class="chat_list" id="'+contacts[i]+'">'
+                    +'<div class="chat_people">'
+                      +'<div class="chat_img"> <img src="' + image_url[i] + '" alt="sunil"> </div>'
+                      +'<div class="chat_ib">'
+                        +'<h5>' + contacts[i] +'</h5>'
+                      +'</div>'
+                    +'</div>'
+                  +'</div>'
+                  )
+                }
               }
-            }
 
+            }
           }
 
           $(".chat_list").click(function(){
@@ -315,6 +324,13 @@
           }
           var objDiv = document.getElementById("show_messages");
           objDiv.scrollTop = objDiv.scrollHeight;
+
+          $("#type_msg").append(
+            '<div class="input_msg_write">'
+              +'<input type="text" class="write_msg" placeholder="Type a message" id="msg_to_be_sent"/>'
+                +'<button class="msg_send_btn" type="button" id="msg_send_btn_id"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>'
+                  +'</div>'
+          )
         },
         error: function(error) {
           console.log(error);
