@@ -115,6 +115,7 @@
             <input id="username" type="hidden" value="{{event['username']}}">
             <input id="start_time" type="hidden" value="{{event['start_time_int']}}">
             <input id="end_time" type="hidden" value="{{event['end_time_int']}}">
+            <input id="title" type="hidden" value="{{event['title']}}">
         </div>
     </body>
     <script>
@@ -133,6 +134,7 @@
                     'start_time': document.getElementById('start_time').value,
                     'end_time': document.getElementById('end_time').value,
                     'username': document.getElementById('username').value,
+                    'title': document.getElementById('title').value
                 }),
                 dataType: "json",
                 contentType: "application/json; charset=utf-8",

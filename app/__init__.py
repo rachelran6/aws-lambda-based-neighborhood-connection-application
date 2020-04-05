@@ -82,9 +82,6 @@ if table_name not in table_names:
     )
 
 
-
-
-
 @webapp.route('/', methods=['GET'])
 @login_required
 def index():
@@ -113,28 +110,21 @@ def profile():
 
     joined_events_response = table.query(
         KeyConditionExpression=Key('username').eq(username),
-        FilterExpression=Attr('item_type').eq('participant')
+        FilterExpression=Attr('item_type').eq("participant")
     )
 
-    response = table.query(
+    profile_response = table.query(
         IndexName="item_type_index",
         KeyConditionExpression=Key('item_type').eq('account'),
         FilterExpression=Attr('username').eq(username)
     )
 
-    if response["Items"]:
-        for i in response["Items"]:
-            if str(i["profile_image"]) == "profile image":
-                image_url = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS52y5aInsxSm31CvHOFHWujqUx_wWTS9iM6s7BAm21oEN_RiGoog"
-            else:
-                image_name = str(i["profile_image"])
-                image_url = s3_client.generate_presigned_url('get_object',
-                                                                Params={
-                                                                 'Bucket': BUCKET,
-                                                                 'Key': image_name,
-                                                                 },
-                                                             ExpiresIn=3600)
-
+    image_url = s3_client.generate_presigned_url('get_object',
+                                                 Params={
+                                                     'Bucket': BUCKET,
+                                                     'Key': profile_response['Items'][0]['profile_image'],
+                                                 },
+                                                 ExpiresIn=3600)
     profile = {
         'username': username,
         'email':  host_response['Items'][0]['email'],
