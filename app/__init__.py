@@ -82,9 +82,6 @@ if table_name not in table_names:
     )
 
 
-
-
-
 @webapp.route('/', methods=['GET'])
 @login_required
 def index():
@@ -105,36 +102,25 @@ def profile():
         KeyConditionExpression=Key('username').eq(username),
         FilterExpression=Attr('item_type').eq('account')
     )
-
     hosted_events_response = table.query(
         KeyConditionExpression=Key('username').eq(username),
         FilterExpression=Attr('item_type').eq('host')
     )
-
     joined_events_response = table.query(
         KeyConditionExpression=Key('username').eq(username),
-        FilterExpression=Attr('item_type').eq('participant')
+        FilterExpression=Attr('item_type').eq("participant")
     )
-
-    response = table.query(
+    profile_response = table.query(
         IndexName="item_type_index",
         KeyConditionExpression=Key('item_type').eq('account'),
         FilterExpression=Attr('username').eq(username)
     )
-
-    if response["Items"]:
-        for i in response["Items"]:
-            if str(i["profile_image"]) == "profile image":
-                image_url = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS52y5aInsxSm31CvHOFHWujqUx_wWTS9iM6s7BAm21oEN_RiGoog"
-            else:
-                image_name = str(i["profile_image"])
-                image_url = s3_client.generate_presigned_url('get_object',
-                                                                Params={
-                                                                 'Bucket': BUCKET,
-                                                                 'Key': image_name,
-                                                                 },
-                                                             ExpiresIn=3600)
-
+    image_url = s3_client.generate_presigned_url('get_object',
+                                                 Params={
+                                                     'Bucket': BUCKET,
+                                                     'Key': profile_response['Items'][0]['profile_image'],
+                                                 },
+                                                 ExpiresIn=3600)
     profile = {
         'username': username,
         'email':  host_response['Items'][0]['email'],
@@ -158,27 +144,25 @@ def profile():
 @login_required
 def event():
     try:
+        username = request.args.get('username')
+        start_time = int(request.args.get('timestamp'))
         event_response = dynamodb.Table('Events').query(
             KeyConditionExpression=Key('username').eq(
-                request.args.get('username')) &
-            Key('start_time').eq(int(request.args.get('timestamp')))
+                username) & Key('start_time').eq(start_time)
         )
         host_response = dynamodb.Table('Events').query(
             KeyConditionExpression=Key('username').eq(
-                request.args.get('username')),
+                username),
             FilterExpression=Attr('item_type').eq("account")
         )
         participant_response = dynamodb.Table('Events').query(
-            KeyConditionExpression=Key('username').eq(
-                request.args.get('username')) &
-            Key('start_time').eq(int(request.args.get('timestamp'))),
-            FilterExpression=Attr('item_type').eq('participant')
+            IndexName='item_type_index',
+            KeyConditionExpression=Key('start_time').eq(
+                start_time) & Key('item_type').eq('participant')
         )
         review_response = dynamodb.Table('Events').query(
-            KeyConditionExpression=Key('username').eq(
-                request.args.get('username')) &
-            Key('start_time').lt(int(request.args.get('timestamp'))),
-            FilterExpression=Attr('item_type').eq('review')
+            KeyConditionExpression=Key('username').eq(username),
+            FilterExpression=Attr('item_type').eq('rating')
         )
 
         event = {
@@ -232,7 +216,7 @@ def decimal_default(obj):
 def _calculate_average_review_start(items):
     star = 0
     for item in items:
-        star += item['start']
+        star += int(item['star'])
 
     if star > 0:
         star = star // len(items)
