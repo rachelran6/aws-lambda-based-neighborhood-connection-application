@@ -26,7 +26,6 @@ bp = Blueprint("events", __name__, url_prefix='/events')
 @bp.route('/', methods=['GET', 'POST'])
 @login_required
 def events():
-
     try:
         if request.method == 'GET':
             response = table.query(
@@ -62,7 +61,6 @@ def events():
         })
 
 
-
 @bp.route('/join', methods=['POST'])
 @login_required
 def join():
@@ -70,6 +68,7 @@ def join():
         username = session.get('username')
         start_time = int(request.get_json()['start_time'])
         end_time = int(request.get_json()['end_time'])
+        title = request.get_json()['title']
         response_host = table.query(
             KeyConditionExpression=Key('username').eq(username))
 
@@ -80,15 +79,17 @@ def join():
                     'isSuccess': False,
                     'message': 'you have a time conflict'
                 })
+
         table.put_item(
             Item={
                 'username': username,
                 'start_time': start_time,
                 'end_time': end_time,
                 'item_type': 'participant',
+                'title': title
             })
         return jsonify({
-            'isSucess': True
+            'isSuccess': True
         })
     except ClientError as e:
         return jsonify({
@@ -100,18 +101,19 @@ def join():
 @bp.route('/rate', methods=['POST'])
 @login_required
 def rate():
-    response = table.update_item(
-        Key={
-            'username': 'sara',
-            'start_time': 1585462294
-        },
-        UpdateExpression="SET stars= :var1",
-        ExpressionAttributeValues={
-            ':var1': 1
-        },
-        ReturnValues="UPDATED_NEW"
-    )
-    return 'rate events'
+    print('here')
+    username = request.form['username']
+    rating = int(request.form['rating'])
+    table.put_item(
+        Item={
+            'username': username,
+            'start_time': int(datetime.utcnow().strftime("%s")),
+            'item_type': 'rating',
+            'star': rating
+        })
+    return jsonify({
+        'isSuccess': True
+    })
 
 
 @bp.route('/drop', methods=['POST'])
