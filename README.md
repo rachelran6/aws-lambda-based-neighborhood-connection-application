@@ -15,6 +15,7 @@ This application is helpful for those who want to have some connections with oth
 
 
 ## Architecture of the application
+![system architecture](/figures/architecture.png)
 
 ### Functions and user interfaces
 
