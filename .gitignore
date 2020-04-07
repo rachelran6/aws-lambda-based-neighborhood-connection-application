@@ -151,4 +151,5 @@ zappa_settings.json
 
 .DS_Store
 
-nohup.out
+*.out
+*.json
