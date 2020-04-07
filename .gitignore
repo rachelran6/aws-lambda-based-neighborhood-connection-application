@@ -150,3 +150,6 @@ zappa_settings.json
 .idea
 
 .DS_Store
+
+*.out
+*.json
