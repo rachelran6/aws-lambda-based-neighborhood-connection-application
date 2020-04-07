@@ -15,6 +15,7 @@ dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 dynamodb_client = boto3.client('dynamodb', region_name='us-east-1')
 s3_client = boto3.client('s3')
 BUCKET = "ece1779-a3-pic"
+table = dynamodb.Table('Events')
 
 webapp = Flask(__name__, instance_relative_config=True)
 webapp.secret_key = 'super secret key'
@@ -183,8 +184,7 @@ def event():
             'events': url_for('index'),
             'messages': url_for('messages'),
             'profile': url_for('profile'),
-            'join': url_for('events.join'),
-            'messages': url_for('messages')
+            'join': url_for('events.join')
         })
     except (botocore.exceptions.ClientError, AssertionError) as e:
         return e.args
@@ -197,6 +197,23 @@ def messages():
     receiver = ''
     if 'receiver' in request.args:
         receiver = request.args.get('receiver')
+        send_message = " "
+        start_time = int(datetime.utcnow().strftime("%s"))
+        item_type = 'message'
+
+        print("inside init")
+        print("username: "+username)
+        print("receiver: "+receiver)
+
+        response = table.put_item(
+            Item={
+                'username': username,
+                'start_time': start_time,
+                'message': send_message,
+                'item_type': item_type,
+                'receiver': receiver,
+            }
+        )    
     return render_template('messages.html',
                            username=username,
                            receiver=receiver,

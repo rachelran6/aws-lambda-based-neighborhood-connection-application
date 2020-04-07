@@ -48,10 +48,10 @@
                 <div class="msg_history" id="show_messages">
                 </div>
                 <div class="type_msg">
-                  <!-- <div class="input_msg_write">
+                  <div class="input_msg_write" id="msg_class_hidden">
                     <input type="text" class="write_msg" placeholder="Type a message" id="msg_to_be_sent"/>
                     <button class="msg_send_btn" type="button" id="msg_send_btn_id"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
-                  </div> -->
+                  </div>
                 </div>
               </div>
             </div>
@@ -68,6 +68,7 @@
       "username":username,
     }
     if (receiver != "") {
+      document.getElementById("msg_class_hidden").style.visibility = "visible";
       console.log("~~~~~~~~hello")
       console.log(JSON.stringify(pass_data))
       $.ajax({
@@ -83,62 +84,67 @@
             var obj = result['messages'][key]
             console.log(obj)
             var obj_ =  JSON.parse(obj)
-
-            if (obj_["sender"] == username) {
-              var this_date = new Date(parseInt(key) * 1000);
-              console.log(this_date)
-              $("#show_messages").append(
-                '<div class="outgoing_msg">'
-                  +'<div class="sent_msg">'
-                    +'<p>'+ obj_["message"] +'</p>'
-                    +'<span class="time_date">' + this_date.toDateString() + '</span> </div>'
-                +'</div>'
-              )
-            }
-            else if (obj_["sender"] == receiver){
-              var this_date = new Date(parseInt(key) * 1000);
-              console.log(this_date)
-              if(result['image_url']=="false") {
+            if (obj_["message"] != " ") {
+              if (obj_["sender"] == username) {
+                var this_date = new Date(parseInt(key) * 1000);
+                console.log(this_date)
                 $("#show_messages").append(
-                '<div class="incoming_msg">'
-                  +'<div class="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>'
-                  +'<div class="received_msg">'
-                    +'<div class="received_withd_msg">'
-                      +'<p>' + obj_["message"] + '</p>'
-                      +'<span class="time_date">' + this_date.toDateString() + '</span></div>'
+                  '<div class="outgoing_msg">'
+                    +'<div class="sent_msg">'
+                      +'<p>'+ obj_["message"] +'</p>'
+                      +'<span class="time_date">' + this_date.toDateString() + '</span> </div>'
                   +'</div>'
-                +'</div>'
                 )
               }
-              else {
-                $("#show_messages").append(
-                '<div class="incoming_msg">'
-                  +'<div class="incoming_msg_img"> <img src="' + result['image_url'] + '" alt="sunil"> </div>'
-                  +'<div class="received_msg">'
-                    +'<div class="received_withd_msg">'
-                      +'<p>' + obj_["message"] + '</p>'
-                      +'<span class="time_date">' + this_date.toDateString() + '</span></div>'
+              else if (obj_["sender"] == receiver){
+                var this_date = new Date(parseInt(key) * 1000);
+                console.log(this_date)
+                if(result['image_url']=="false") {
+                  $("#show_messages").append(
+                  '<div class="incoming_msg">'
+                    +'<div class="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>'
+                    +'<div class="received_msg">'
+                      +'<div class="received_withd_msg">'
+                        +'<p>' + obj_["message"] + '</p>'
+                        +'<span class="time_date">' + this_date.toDateString() + '</span></div>'
+                    +'</div>'
                   +'</div>'
-                +'</div>'
-                )
-              } 
+                  )
+                }
+                else {
+                  $("#show_messages").append(
+                  '<div class="incoming_msg">'
+                    +'<div class="incoming_msg_img"> <img src="' + result['image_url'] + '" alt="sunil"> </div>'
+                    +'<div class="received_msg">'
+                      +'<div class="received_withd_msg">'
+                        +'<p>' + obj_["message"] + '</p>'
+                        +'<span class="time_date">' + this_date.toDateString() + '</span></div>'
+                    +'</div>'
+                  +'</div>'
+                  )
+                } 
+              }
             }
           }
-
-          $("#type_msg").append(
-            '<div class="input_msg_write">'
-              +'<input type="text" class="write_msg" placeholder="Type a message" id="msg_to_be_sent"/>'
-                +'<button class="msg_send_btn" type="button" id="msg_send_btn_id"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>'
-                  +'</div>'
-          )
-
           var objDiv = document.getElementById("show_messages");
           objDiv.scrollTop = objDiv.scrollHeight;
+
+          // console.log("why this is not added into the page!!!!!!")
+          // $("#type_msg").append(
+          //   '<div class="input_msg_write">'
+          //     +'<input type="text" class="write_msg" placeholder="Type a message" id="msg_to_be_sent"/>'
+          //       +'<button class="msg_send_btn" type="button" id="msg_send_btn_id"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>'
+          //         +'</div>'
+          // )
+          
         },
         error: function(error) {
           console.log(error);
         }
       });
+    }
+    else {
+      document.getElementById("msg_class_hidden").style.visibility = "hidden";
     }
       $.ajax({
         type: 'GET',
@@ -225,9 +231,15 @@
           loadMessages(username, buttonElementId)
         });
 
+        $("#msg_to_be_sent").click(function(){
+          document.querySelector('.write_msg').value = '';
+          document.getElementById("msg_send_btn_id").style.visibility = "visible";
+        });
+
         $("#msg_send_btn_id").click(function(){
           var inputVal = document.getElementById("msg_to_be_sent").value;
-          var pass_data = {
+          if (inputVal != '' & inputVal != ' ') {
+            var pass_data = {
             "message":inputVal,
             "receiver":receiver,
             "username":username
@@ -241,6 +253,7 @@
             dataType: 'json',
             success: (result) => {
               // location.reload()
+              document.getElementById("msg_send_btn_id").style.visibility = "hidden";
               reloadMessages(username, receiver)
               document.querySelector('.write_msg').value = 'Type a message'
             },
@@ -248,6 +261,7 @@
               console.log(error);
             }
           });
+          }
         });
 
 
@@ -266,6 +280,7 @@
       "username":username,
     }
     if (receiver != "") {
+      document.getElementById("msg_class_hidden").style.visibility = "visible";
       console.log("~~~~~~~~hello")
       console.log(JSON.stringify(pass_data))
       $.ajax({
@@ -281,61 +296,66 @@
             var obj = result['messages'][key]
             console.log(obj)
             var obj_ =  JSON.parse(obj)
-
-            if (obj_["sender"] == username) {
-              var this_date = new Date(parseInt(key) * 1000);
-              console.log(this_date)
-              $("#show_messages").append(
-                '<div class="outgoing_msg">'
-                  +'<div class="sent_msg">'
-                    +'<p>'+ obj_["message"] +'</p>'
-                    +'<span class="time_date">' + this_date.toDateString() + '</span> </div>'
-                +'</div>'
-              )
-            }
-            else if (obj_["sender"] == receiver){
-              var this_date = new Date(parseInt(key) * 1000);
-              console.log(this_date)
-              if(result['image_url']=="false") {
+            if (obj_["message"] != " ") {
+              if (obj_["sender"] == username) {
+                var this_date = new Date(parseInt(key) * 1000);
+                console.log(this_date)
                 $("#show_messages").append(
-                '<div class="incoming_msg">'
-                  +'<div class="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>'
-                  +'<div class="received_msg">'
-                    +'<div class="received_withd_msg">'
-                      +'<p>' + obj_["message"] + '</p>'
-                      +'<span class="time_date">' + this_date.toDateString() + '</span></div>'
+                  '<div class="outgoing_msg">'
+                    +'<div class="sent_msg">'
+                      +'<p>'+ obj_["message"] +'</p>'
+                      +'<span class="time_date">' + this_date.toDateString() + '</span> </div>'
                   +'</div>'
-                +'</div>'
                 )
               }
-              else {
-                $("#show_messages").append(
-                '<div class="incoming_msg">'
-                  +'<div class="incoming_msg_img"> <img src="' + result['image_url'] + '" alt="sunil"> </div>'
-                  +'<div class="received_msg">'
-                    +'<div class="received_withd_msg">'
-                      +'<p>' + obj_["message"] + '</p>'
-                      +'<span class="time_date">' + this_date.toDateString() + '</span></div>'
+              else if (obj_["sender"] == receiver){
+                var this_date = new Date(parseInt(key) * 1000);
+                console.log(this_date)
+                if(result['image_url']=="false") {
+                  $("#show_messages").append(
+                  '<div class="incoming_msg">'
+                    +'<div class="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>'
+                    +'<div class="received_msg">'
+                      +'<div class="received_withd_msg">'
+                        +'<p>' + obj_["message"] + '</p>'
+                        +'<span class="time_date">' + this_date.toDateString() + '</span></div>'
+                    +'</div>'
                   +'</div>'
-                +'</div>'
-                )
-              } 
+                  )
+                }
+                else {
+                  $("#show_messages").append(
+                  '<div class="incoming_msg">'
+                    +'<div class="incoming_msg_img"> <img src="' + result['image_url'] + '" alt="sunil"> </div>'
+                    +'<div class="received_msg">'
+                      +'<div class="received_withd_msg">'
+                        +'<p>' + obj_["message"] + '</p>'
+                        +'<span class="time_date">' + this_date.toDateString() + '</span></div>'
+                    +'</div>'
+                  +'</div>'
+                  )
+                } 
+              }
             }
           }
+          
+          // $("#type_msg").append(
+          //   '<div class="input_msg_write">'
+          //     +'<input type="text" class="write_msg" placeholder="Type a message" id="msg_to_be_sent"/>'
+          //       +'<button class="msg_send_btn" type="button" id="msg_send_btn_id"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>'
+          //         +'</div>'
+          // )
+
           var objDiv = document.getElementById("show_messages");
           objDiv.scrollTop = objDiv.scrollHeight;
-
-          $("#type_msg").append(
-            '<div class="input_msg_write">'
-              +'<input type="text" class="write_msg" placeholder="Type a message" id="msg_to_be_sent"/>'
-                +'<button class="msg_send_btn" type="button" id="msg_send_btn_id"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>'
-                  +'</div>'
-          )
         },
         error: function(error) {
           console.log(error);
         }
       });
+    }
+    else {
+      document.getElementById("msg_class_hidden").style.visibility = "hidden";
     }
   }  
 
@@ -346,12 +366,37 @@
       console.log(receiver)
       
       $("#logoutButton").click(function(){
-                logout("{{url_for('auth.logout')}}")
+        logout("{{url_for('auth.logout')}}")
       });
 
       $('#show_contacts').empty();
-        loadMessages(username, receiver)
+      document.getElementById("msg_send_btn_id").style.visibility = "hidden";
+      loadMessages(username, receiver)
     });
 </script>
+<style>
+  .incoming_msg_img{
+            text-align: center;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+        }
+  .incoming_msg_img img{
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+  }
+  .chat_img{
+    text-align: center;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+  }
+  .chat_img img{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+  }
+</style>
 </html>
 
