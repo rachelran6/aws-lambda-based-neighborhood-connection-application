@@ -1,1 +1,1 @@
-nohup python -u notification.py &
+nohup python -u scheduler.py &

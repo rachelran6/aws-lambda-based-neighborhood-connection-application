@@ -17,9 +17,7 @@ import app
 
 from .auth import login_required
 
-dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
-dynamodb_client = boto3.client('dynamodb', region_name='us-east-1')
-table = dynamodb.Table('Events')
+table = boto3.resource('dynamodb', region_name='us-east-1').Table('Events')
 bp = Blueprint("events", __name__, url_prefix='/events')
 
 
@@ -30,7 +28,8 @@ def events():
         if request.method == 'GET':
             response = table.query(
                 IndexName='item_type_index',
-                KeyConditionExpression=Key('item_type').eq('host')
+                KeyConditionExpression=Key('item_type').eq('host'),
+                FilterExpression= Attr('is_active').eq(1)
             )
             return json.dumps({
                 'isSuccess': True,
