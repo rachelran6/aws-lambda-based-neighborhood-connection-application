@@ -69,11 +69,10 @@ def join():
         end_time = int(request.get_json()['end_time'])
         title = request.get_json()['title']
         response_host = table.query(
-            KeyConditionExpression=Key('username').eq(username))
-
+            KeyConditionExpression=Key('username').eq(username),
+            FilterExpression=Attr('item_type').eq('host') | Attr('item_type').eq('participant'))
         for i in response_host["Items"]:
-            if i['item_type'] != 'account' \
-                    and _is_conflict(int(i["start_time"]), int(i["end_time"]), start_time, end_time):
+            if _is_conflict(int(i["start_time"]), int(i["end_time"]), start_time, end_time):
                 return jsonify({
                     'isSuccess': False,
                     'message': 'you have a time conflict'
