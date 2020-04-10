@@ -73,7 +73,7 @@
       console.log(JSON.stringify(pass_data))
       $.ajax({
         type: 'GET',
-        url: '/users/messages',
+        url: "{{url_for('users.messages')}}",
         contentType: 'application/json',
         data: pass_data,
         dataType: 'json',
@@ -148,7 +148,7 @@
     }
       $.ajax({
         type: 'GET',
-        url: '/users/messages_contacts',
+        url: "{{url_for('users.messages_contacts')}}",
         contentType: 'application/json',
         data: pass_data0,
         dataType: 'json',
@@ -247,7 +247,7 @@
 
           $.ajax({
             type: 'POST',
-            url: '/users/messages',
+            url: "{{url_for('users.messages')}}", 
             contentType: 'application/json',
             data: JSON.stringify(pass_data),
             dataType: 'json',
@@ -285,7 +285,7 @@
       console.log(JSON.stringify(pass_data))
       $.ajax({
         type: 'GET',
-        url: '/users/messages',
+        url: "{{url_for('users.messages')}}",
         contentType: 'application/json',
         data: pass_data,
         dataType: 'json',

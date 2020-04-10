@@ -4,9 +4,13 @@ logout = (url) => {
         type: "POST", 
         success: function(result) {
             if (result['isSuccess']) {
-                window.location.replace(response["url"])
+                window.location.replace('/dev/login');
             }
-    }});
+        },
+        error: function() {
+            alert('logout failed');
+        }
+    });
 }
 
 markEventOnMap = (geocoder, map, title, address, ) => {
@@ -16,7 +20,7 @@ markEventOnMap = (geocoder, map, title, address, ) => {
             var marker = new google.maps.Marker({
                 map: map,
                 position: results[0].geometry.location,
-                title: "test"
+                title: title
             });
             var infowindow = new google.maps.InfoWindow();
             google.maps.event.addListener(marker, 'click', function() {
