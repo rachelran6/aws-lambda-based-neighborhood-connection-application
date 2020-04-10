@@ -84,7 +84,7 @@ if table_name not in table_names:
 
 
 @webapp.route('/', methods=['GET'])
-@login_required
+# @login_required
 def index():
     return render_template('index.html',
                            urls={
