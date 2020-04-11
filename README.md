@@ -128,62 +128,102 @@ Suppose 30 searches per user a month and each user creates 3 events per month. O
 
 #### S3: $0.005 / 1000 POST requests; $0.0004 / 1000 GET requests
 Each user has 1 POST request when they register. A user only requests for a profile image when they leave messages to others and view profile page. We assume that a user will have 30 GET requests per month.
+
 For 10 users: 10 * $0.005 + 10 * 30 * $0.0004 = $0.17
+
 For 1000 users: 1000 * $0.005 + 1000 * 30 * $0.0004 = $17
+
 For 1000,000 users: 1000,000 * $0.005 + 1000,000 * 30 * $0.0004 = $17000
 
+
 #### DynamoDB: $0.25 / 1 million read request units; $1.25 / 1 million write request units
-Read request unit: For items up to 4 KB in size, an eventually consistent read request requires one-half read request unit.
+##### Read request unit: For items up to 4 KB in size, an eventually consistent read request requires one-half read request unit.
 ##### Request assumptions: 17,465 requests / month per user; 
 Search events: 30 / month per user
+
 View event details: 60 / month per user
+
 View messages: 30 / month per user
+
 View profile user info: 30 / month per user
+
 View profile history events: 30 / month per user
+
 Login: 5 / month per user
+
 Reminder: 1 / 5 minute
+
 Garbage collection: 1 / 5 minute
 
-Write request unit: A standard write request unit can write an item up to 1 KB.
+
+##### Write request unit: A standard write request unit can write an item up to 1 KB.
 ##### Request assumptions: 744 requests / month per user
 Create events: 3 / month per user
+
 Join events: 5 / month per user
+
 Drop events: 2 / month per user
+
 Rate events: 3 / month per user
+
 Leave messages: 10 / month per user
+
 Register: 1 per user
+
 Garbage collection: 1 / hour
+
 
 #### Lambda: $0.20 / 1M requests
 ##### Request assumptions: 18,209 requests / month per user
 Search events: 30 / month per user
+
 View event details: 60 / month per user
+
 View messages: 30 / month per user
+
 View profile user info: 30 / month per user
+
 View profile history events: 30 / month per user
+
 Login: 5 / month per user
+
 Reminder: 1 / 5 minute
+
 Garbage collection: 1 / 5 minute
+
 Create events: 3 / month per user
+
 Join events: 5 / month per user
+
 Drop events: 2 / month per user
+
 Rate events: 3 / month per user
+
 Leave messages: 10 / month per user
+
 Register: 1 per user
+
 Garbage collection: 1 / hour
+
 
 ### Summary
 #### 6 month for 10 users:
 Basic: $21.6
+
 Dynamic: $0.17 + $0.26 + $0.06 + $0.22 = $0.71
+
 Sum: $22.31
 
 #### 6 month for 1000 users:
 Basic: $21.6
+
 Dynamic: $17 + $26.2 + $5.58 + $21.85 = $70.63
+
 Sum: $92.23
 
 #### 6 month for 1000,000 users:
 Basic: $2.3 + $26.75 + $21.6 = $50.65
+
 Dynamic: $17000 + $26197.5 + $5580 + $21850.8 = $65048.3
+
 Sum: $65098.95
