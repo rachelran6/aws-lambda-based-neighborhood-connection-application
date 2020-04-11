@@ -103,18 +103,20 @@ def join():
 def rate():
     try: 
         username = request.form['username']
+        self_username = request.cookies.get('username')
         rating = int(request.form['rating'])
         start_time = int(datetime.fromisoformat(request.form['start_time']).timestamp())
-        assert session.get('username')!=username, "You cannot rate yourself."
+        
+        assert self_username != username, "You cannot rate yourself."
 
         response = table.query(
-            KeyConditionExpression=Key('username').eq(session.get('username')) & Key('start_time').eq(start_time)
+            KeyConditionExpression=Key('username').eq(self_username) & Key('start_time').eq(start_time)
         )
         assert len(response['Items'])!=0, "You are not one of the participants of this event"
 
         response = table.query(
             KeyConditionExpression=Key('username').eq(username),
-            FilterExpression = Attr('rater').eq(session.get('username'))
+            FilterExpression = Attr('rater').eq(self_username)
         )
         assert len(response['Items'])==0, "You have already rated this host"
 
@@ -123,7 +125,7 @@ def rate():
                 'username': username,
                 'start_time': int(datetime.utcnow().strftime("%s")),
                 'item_type': 'rating',
-                'rater':session.get('username'),
+                'rater': self_username,
                 'star': rating
             })
         return jsonify({
