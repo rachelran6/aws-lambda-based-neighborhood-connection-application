@@ -101,7 +101,14 @@ def join():
 def rate():
     username = request.form['username']
     rating = int(request.form['rating'])
+    start_time = int(datetime.fromisoformat(request.form['start_time']).timestamp())
     assert session.get('username')!=username, "You cannot rate yourself."
+
+    response = table.query(
+        KeyConditionExpression=Key('username').eq(session.get('username')) & Key('start_time').eq(start_time)
+    )
+    assert len(response['Items'])!=0, "You are not one of the participants of this event"
+
     response = table.query(
         KeyConditionExpression=Key('username').eq(username),
         FilterExpression = Attr('rater').eq(session.get('username'))
