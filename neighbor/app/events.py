@@ -69,6 +69,14 @@ def join():
         end_time = int(request.get_json()['end_time'])
         title = request.get_json()['title']
         address = request.get_json()['address']
+        required_parti_num = request.get_json()['required_parti_num']
+
+        response_participants = table.query(
+            KeyConditionExpression=Key('start_time').eq(start_time),
+            FilterExpression=Attr('item_type').eq('participant') & Attr('title').eq('title')
+        )
+        assert len(response_participants['Items'])<required_parti_num, "This event is full"
+
         response_host = table.query(
             KeyConditionExpression=Key('username').eq(username),
             FilterExpression=Attr('item_type').eq('host') | Attr('item_type').eq('participant'))
