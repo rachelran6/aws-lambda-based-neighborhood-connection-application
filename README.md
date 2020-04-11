@@ -69,7 +69,7 @@ zappa update dev
 
 
 ## Architecture of the application
-![system architecture](/figures/architecture.png)
+![system architecture](figures/architecture.png)
 
 
 Overall, this application consists of six AWS services for networking, computation and storage function as they are listed below. From a functional perspective, this application is made of two components: web services and background process.   
@@ -89,31 +89,31 @@ There is a scheduler that is deployed on EC2 and scheduled to run every 5 minute
 - Garbage collection: Scheduler would check the DynamoDB to see if there is any event passes its scheduled time and no longer active. It there is, update the database to change the status to be inactive as a soft delete.
 
 ### Functions and user interfaces
-![mainPage](/figures/events.png) 
+![mainPage](figures/events.png) 
 
 The main page presents events locations on a map and basic events information in a table. Users are able to select how many event entries to show on this page and search events by key words. Users can sort the events in the table by title, type, location, start time, end time and host through clicking the arrows in the header.
 
-![createEvent](/figures/create_event.png) 
+![createEvent](figures/create_event.png) 
 
 Users can create an event by entering the information of it, like title, type, location, number of participants required, start time and end time.
 
-![login](/figures/login.png)
+![login](figures/login.png)
 
 Users are required to login before they can make any further operations.
 
-![register](/figures/register.png)
+![register](figures/register.png)
 
 If users are new to the application, they need to register first. They can register without a profile image, in that case, the default one will be used.
 
-![eventDetails](/figures/event_detail.png) 
+![eventDetails](figures/event_detail.png) 
 
 Click the title of the event on the main page will lead to the page that shows event details. Users can see the location on the map, view event details and host information. They can also click the buttons to leave a message to the host, join the event and rate the event.
 
-![Message](/figures/message.png)
+![Message](figures/message.png)
 
 If users click the button "Message host" on the page that shows event details, they will be led to the message page where there's a contact list on the left and history messages with that host on the right. If users click 'Message' on the navigation bar, the message page will only show the contact list. Once a contact is chosen, the messages on the right will be refreshed.
 
-![Profile](/figures/profile.png)
+![Profile](figures/profile.png)
 The profile page shows user's information and the events that the user has hosted and joined. Users are able to drop events that they do not prefer any more. 
 
 
@@ -122,7 +122,7 @@ The profile page shows user's information and the events that the user has hoste
 #### Event notifications
 For any event that is scheduled to be held within one hour, this application would automatically send emails to all participants and host. Users would be specifically notified the event title they signed up for and the scheduled time. 
 
-![email](/figures/email.png)
+![email](figures/email.png)
 
 #### Garbage collection
 For any event that its start time has passed, the status is updated to be inactive as a soft delete. These events won't be displayed to users anymore.
