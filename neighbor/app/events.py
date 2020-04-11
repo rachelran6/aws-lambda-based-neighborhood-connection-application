@@ -105,6 +105,7 @@ def rate():
         username = request.form['username']
         self_username = request.cookies.get('username')
         rating = int(request.form['rating'])
+        title = request.form['title']
         start_time = int(datetime.fromisoformat(request.form['start_time']).timestamp())
         
         assert self_username != username, "You cannot rate yourself."
@@ -116,7 +117,7 @@ def rate():
 
         response = table.query(
             KeyConditionExpression=Key('username').eq(username),
-            FilterExpression = Attr('rater').eq(self_username)
+            FilterExpression = Attr('rater').eq(self_username) & Attr('title').eq(title)
         )
         assert len(response['Items'])==0, "You have already rated this host"
 
@@ -126,7 +127,8 @@ def rate():
                 'start_time': int(datetime.utcnow().strftime("%s")),
                 'item_type': 'rating',
                 'rater': self_username,
-                'star': rating
+                'star': rating,
+                'title': title
             })
         return jsonify({
             'isSuccess': True
