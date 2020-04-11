@@ -67,7 +67,6 @@
                                         <th scope="col">Start Time</th>
                                         <th scope="col">End Time</th>
                                         <th scope="col">Address</th>
-                                        <th scope="col">Rating</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -77,7 +76,6 @@
                                             <td>{{ show_time(event['start_time'])}}</td>
                                             <td>{{ show_time(event['end_time'])}}</td>
                                             <td>{{event['address']}}</td>
-                                            <td>{{event['rating']}}</td>
                                             </tr>
                                         {% endfor %}
                                     </tbody>
