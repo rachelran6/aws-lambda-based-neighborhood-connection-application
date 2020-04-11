@@ -7,7 +7,7 @@ from boto3.dynamodb.conditions import Attr, Key
 from botocore.exceptions import ClientError
 
 from flask import (Blueprint, flash, jsonify, redirect, render_template,
-                   request, url_for)
+                   request, url_for, g)
 
 import app
 
