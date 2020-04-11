@@ -86,22 +86,21 @@
                                 <table class="table table-striped" id="join_table">
                                     <thead>
                                         <tr>
-                                        <th scope="col">Title</th>
+                                        <th scope="col" >Title</th>
                                         <th scope="col">Start Time</th>
                                         <th scope="col">End Time</th>
                                         <th scope="col">Address</th>
-                                        <th scope="col">Rating</th>
                                         <th scope="col">Status</th>
                                         </tr>
                                     </thead>
                                     <tbody id="join_table">
                                         {% for event in profile['joined_events']%}
                                             <tr>
-                                            <th scope="row">{{event['title']}}</th>
+                                                <th scope="row"><a href=event?username={{event['username']}}&timestamp={{ event['start_time']}}>{{event['title']}}</a></th>
+
                                             <td id=event['start_time'] >{{show_time(event['start_time'])}}</td>
                                             <td>{{show_time(event['end_time'])}}</td>
                                             <td>{{event['address']}}</td>
-                                            <td>{{event['rating']}}</td>
                                             <td><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" id="dropOutButton" onclick="dropout({{event['start_time']}})">Drop Out</button></td>
                                             </tr>
                                         {% endfor %}
