@@ -7,7 +7,7 @@ from boto3.dynamodb.conditions import Attr, Key
 from botocore.exceptions import ClientError
 
 from flask import (Blueprint, flash, jsonify, redirect, render_template,
-                   request, session, url_for)
+                   request, url_for)
 
 import app
 
@@ -29,7 +29,7 @@ def events():
             response = table.query(
                 IndexName='item_type_index',
                 KeyConditionExpression=Key('item_type').eq('host'),
-                FilterExpression= Attr('is_active').eq(1)
+                FilterExpression=Attr('is_active').eq(1)
             )
             return json.dumps({
                 'isSuccess': True,
@@ -38,7 +38,7 @@ def events():
         if request.method == "POST":
             table.put_item(
                 Item={
-                    'username': session.get('username'),
+                    'username': g.user,
                     'start_time': int(datetime.fromisoformat(request.form['start_time']).timestamp()),
                     'end_time': int(datetime.fromisoformat(request.form['end_time']).timestamp()),
                     'title': request.form['title'],
@@ -64,7 +64,7 @@ def events():
 @login_required
 def join():
     try:
-        username = session.get('username')
+        username = g.user
         start_time = int(request.get_json()['start_time'])
         end_time = int(request.get_json()['end_time'])
         title = request.get_json()['title']
@@ -117,12 +117,11 @@ def rate():
 @bp.route('/dropout', methods=['DELETE'])
 @login_required
 def dropout():
-    print("dropped out function")
 
     try:
         table.delete_item(
             Key={
-                'username': session.get('username'),
+                'username': g.user,
                 'start_time': request.get_json()['start_time']
             })
         return jsonify({

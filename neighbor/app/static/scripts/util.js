@@ -4,11 +4,9 @@ logout = (url) => {
         type: "POST", 
         success: function(result) {
             if (result['isSuccess']) {
-                window.location.replace('/dev/login');
+                localStorage.username = ""
+                window.location.replace(result['url']);
             }
-        },
-        error: function() {
-            alert('logout failed');
         }
     });
 }
