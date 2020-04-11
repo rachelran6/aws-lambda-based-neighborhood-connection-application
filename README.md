@@ -14,6 +14,21 @@ This application is helpful for those who want to have some connections with oth
 
 ## Quick Start
 
+### project structures
+~~~
+ece1779-a3
+├── SendEmail                   # Lamdb function for email notification
+│   └── app
+├── figures                     # Documentation
+├── neighbor                    # Lambda function for the Neighbor application
+│   └── app
+│       ├── static
+│       │   ├── favicon
+│       │   ├── scripts
+│       │   └── styles
+│       └── templates
+└── scheduler                   # back ground process
+~~~
 ### Set up virtual environment
 ~~~
 python -m venv venv
@@ -56,8 +71,15 @@ zappa update dev
 ## Architecture of the application
 ![system architecture](/figures/architecture.png)
 
+
+Overall, this application consists of six AWS services for networking, computation and storage function as they are listed below. From a functional perspective, this application is made of two components: web services and background process.   
+- Computation: Lambda, EC2
+- Network: API Gateway
+- Storage: DynamoDB, S3
+- Security: IAM
+
 ### Application and AWS Lambda
-The WSGI-compatible Python application 'neighbor' is deployed on AWS Lambda function and API Gateway using Zappa, which makes this an AWS serverless app. By default, Zappa creates an identity and access management (IAM) policy that provides enough permissions to get started, including access to S3 and DynamoDB. A request from an HTTP client will be accepted by the API Gateway and processed by the Lambda function, during which there could be read/write operations to DynamoDB and S3.
+The WSGI-compatible Python application 'neighbor' provides the interface with users and is deployed on AWS Lambda service as a serverless application. The lambda function accept and respond to HTTP request dispatched from API Gateway. The lambda function is able to access S3 and DynamoDB for storage. Email notification will be triggered periodically by the background scheduler to reminder users' upcoming events. IAM services grant proper access to lambda function and the EC2 instnaces to ensure they can interact with necessary services.
 
 ### Background process
 There is a scheduler that is deployed on EC2 and scheduled to run every 5 minute and triggers event notification and garbage collection functions.
@@ -123,9 +145,7 @@ Use AWS DynamoDB Free Tier, first 25 GB of data storage per month is free, 0.25 
 Use 512 MB for memory, which costs $0.0000008333 per 100ms. $0.0000008333 * 10 * 3600 * 24 * 30 = $21.6
 
 ### Dynamic cost
-#### Google map service: $5 / 1000 requests; ??? one request one location
-Suppose 30 searches per user a month and each user creates 3 events per month. On average, each search has around ??? events. 
-
+ 
 #### S3: $0.005 / 1000 POST requests; $0.0004 / 1000 GET requests
 Each user has 1 POST request when they register. A user only requests for a profile image when they leave messages to others and view profile page. We assume that a user will have 30 GET requests per month.
 
