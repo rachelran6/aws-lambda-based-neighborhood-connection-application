@@ -210,10 +210,6 @@ def messages():
         start_time = int(datetime.utcnow().strftime("%s"))
         item_type = 'message'
 
-        print("inside init")
-        print("username: "+username)
-        print("receiver: "+receiver)
-
         response = table.put_item(
             Item={
                 'username': username,

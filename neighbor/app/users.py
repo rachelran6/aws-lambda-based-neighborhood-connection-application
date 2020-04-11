@@ -29,8 +29,6 @@ def messages():
         if request.method == 'GET':
             get_receiver = request.args.get('receiver')
             get_username = request.args.get('username')
-            print("~~~~~~~~~ receiver: "+get_receiver)
-            print("~~~~~~~~~ username: "+get_username)
 
             response = table.query(
                 IndexName="item_type_index",
@@ -50,7 +48,6 @@ def messages():
                                                                          'Key': image_name,
                                                                      },
                                                                      ExpiresIn=3600)
-
             messages_dict = {}
             sorted_messages_dict = {}
             this_dict = {}
