@@ -111,7 +111,7 @@
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLabel">Create an event</h5>
+                                            <h5 class="modal-title" id="exampleModalLabel">Rate an event</h5>
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                             </button>
@@ -119,7 +119,7 @@
                                         <div class="modal-body">
                                             <form id='eventRateFrom'>
                                             <div>
-                                                <label for="events_type">Rate Event:</label>
+                                                <label id="rateLabel" for="events_type">Please give a rate:</label>
                                                 <select name="rating">
                                                 <option value="1">1</option>
                                                 <option value="2">2</option>
@@ -266,6 +266,12 @@
             height: 90%;
             margin: 5px;
             padding: 5px;
+        }
+        #exampleModalLabel {
+            color: rgb(10, 0, 0);
+        }
+        #rateLabel {
+            color: rgb(10, 0, 0);
         }
     </style>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDbhbcq9vDMMwwl2LG7DE5PQK5Os-hbgSw&callback=initMap"
