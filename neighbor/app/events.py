@@ -68,6 +68,7 @@ def join():
         start_time = int(request.get_json()['start_time'])
         end_time = int(request.get_json()['end_time'])
         title = request.get_json()['title']
+        address = request.get_json()['address']
         response_host = table.query(
             KeyConditionExpression=Key('username').eq(username),
             FilterExpression=Attr('item_type').eq('host') | Attr('item_type').eq('participant'))
@@ -84,7 +85,8 @@ def join():
                 'start_time': start_time,
                 'end_time': end_time,
                 'item_type': 'participant',
-                'title': title
+                'title': title,
+                'address': address
             })
         return jsonify({
             'isSuccess': True

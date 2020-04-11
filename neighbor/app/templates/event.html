@@ -44,7 +44,7 @@
                 <div class="row" style="height:550px;">
                     <div id="map" class="col-md-6 maps"></div>
                     <div class="col-md-6">
-                        <h2 class="text-uppercase mt-3 font-weight-bold text-white">Event Detial</h2>
+                        <h2 class="text-uppercase mt-3 font-weight-bold text-white">Event Detail</h2>
                         <form action="">
                         <div class="row">
                             <div class="col-12">
@@ -175,7 +175,8 @@
                     'start_time': document.getElementById('start_time').value,
                     'end_time': document.getElementById('end_time').value,
                     'username': document.getElementById('username').value,
-                    'title': document.getElementById('title').value
+                    'title': document.getElementById('title').value,
+                    'address': document.getElementById('address').innerHTML
                 }),
                 dataType: "json",
                 contentType: "application/json; charset=utf-8",

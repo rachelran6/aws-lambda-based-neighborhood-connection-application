@@ -34,6 +34,9 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         username = request.cookies.get('username')
+        print(username)
+        if username == None:
+            return redirect(url_for('auth.login'))
 
         item = login_table.query(KeyConditionExpression=Key(
             'username').eq(username))['Items'][0]
