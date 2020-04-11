@@ -196,7 +196,7 @@ def logout():
     Returns:
         [type] -- [description] this endpoint returns json result
         {
-            isSuccess: boolean indecating if logout is successful,
+            isSuccess: boolean indicating if logout is successful,
             message: error message if applicable
         }
     """
