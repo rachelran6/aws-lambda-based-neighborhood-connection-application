@@ -96,7 +96,7 @@ Click the title of the event on the main page will lead to the page that shows e
 
 If users click the button "Message host" on the page that shows event details, they will be led to the message page where there's a contact list on the left and history messages with that host on the right. If users click 'Message' on the navigation bar, the message page will only show the contact list. Once a contact is chosen, the messages on the left will be refreshed.
 
-![Profile] 
+![Profile](/figures/profile.png)
 The profile page shows user's information and the events that the user has hosted and joined.
 
 
