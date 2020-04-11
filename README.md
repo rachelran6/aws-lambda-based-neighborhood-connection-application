@@ -72,11 +72,11 @@ Scheduler would trigger an lambda function, which would check the DynamoDB to se
 Scheduler would check the DynamoDB to see if there is any event passes its scheduled time and no longer active. It there is, update the database to change the status to be inactive as a soft delete.
 
 ### Functions and user interfaces
-![mainPage] need a figure with locations flagged (put this to landing page?? new event= =)
+![mainPage](/figures/events.png) need a figure with locations flagged (put this to landing page?? new event= =)
 
 The main page shows events locations on a map and basic events information in a table. Users are able to select how many event entries to show on this page and search events by key words. Users can sort the events in the table by title, type, location, start time, end time and host through clicking the arrows in the header.
 
-![createEvent] need a figure for this (not robust)
+![createEvent](/figures/create_event.png) need a figure for this (not robust)
 
 Users can create an event by entering the information of it, like title, type, location, number of participants required, start time and end time.
 
@@ -88,11 +88,11 @@ If users are new to the application, they need to register first. They can regis
 
 ![register](/figures/register.png)
 
-![eventDetails] people who haven't join cannot rate;
+![eventDetails](/figures/event_detail.png) people who haven't join cannot rate;
 
 Click the title of the event on the main page will lead to the page that shows event details. Users can see the location on the map, view event details and host information. They can also click the buttons to leave a message to the host, join the event and rate the event.
 
-![Message] 
+![Message](/figures/message.png)
 
 If users click the button "Message host" on the page that shows event details, they will be led to the message page where there's a contact list on the left and history messages with that host on the right. If users click 'Message' on the navigation bar, the message page will only show the contact list. Once a contact is chosen, the messages on the left will be refreshed.
 
