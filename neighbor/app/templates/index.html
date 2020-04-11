@@ -38,8 +38,12 @@
                     <a class="nav-link" href="{{urls['profile']}}">Profile</a>
                 </li>
                 </ul>
-                <form class="form-inline my-2 my-lg-0">
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit" id="logoutButton">Logout</button>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                  New event
+                </button>
+                <pre>  </pre>
+                <form class="form-inline my-2 my-lg-0" action="{{url_for('auth.logout')}}">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit" id="logoutButton" >Logout</button>
                 </form>
             </div>
         </nav>
@@ -64,9 +68,9 @@
       </table>
     </div>
   
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+    <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
       New event
-    </button>
+    </button> -->
 
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
@@ -84,7 +88,7 @@
                 <input type="text" class="form-control" name="title">
               </div>
               <div>
-                <label for="events_type">Choose a car:</label>
+                <label for="events_type">Choose a type:</label>
                   <select name="event_type">
                   <option value="sports">sports</option>
                   <option value="entertainment">entertainment</option>
@@ -98,15 +102,15 @@
                 <input class="form-control" name="address">
               </div>
               <div class="form-group">
-                <label for="birthdaytime">time:</label>
+                <label for="birthdaytime">Start time:</label>
                 <input type="datetime-local" name="start_time">
               </div>
               <div class="form-group">
-                <label for="birthdaytime">time:</label>
+                <label for="birthdaytime">End time:</label>
                 <input type="datetime-local" name="end_time">
               </div>
               <div class="form-group">
-                <label for="message-text" class="col-form-label">Participants Required:</label>
+                <label for="message-text" class="col-form-label">Number of participants preferred:</label>
                 <input class="form-control" name="required_participant_number">
               </div>
               <div class="modal-footer">
@@ -178,7 +182,10 @@
 
       $(document).ready(function(){
         $.ajax({
-          url: window.location.href + "/events", 
+          url: "{{url_for('events.events')}}",
+          data:{
+            username: localStorage.username
+          },
           type: "GET", 
           success: function(result) {
               var response = JSON.parse(result);
@@ -200,9 +207,9 @@
                     }
                 }
             });
-        $("#logoutButton").click(function(){
-          logout("{{url_for('auth.logout')}}")
-        });
+        // $("#logoutButton").click(function(){
+        //   logout("{{url_for('auth.logout')}}")
+        // });
 
       });
     </script>

@@ -22,7 +22,8 @@ import app
 
 bp = Blueprint("auth", __name__)
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
-table = dynamodb.Table('Events')
+events_table = dynamodb.Table('Events')
+login_table = dynamodb.Table('Login')
 s3_client = boto3.client('s3')
 s3 = boto3.resource('s3')
 BUCKET = "ece1779-a3-pic"
@@ -32,7 +33,15 @@ APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if g.user is None:
+        username = request.cookies.get('username')
+        print(username)
+        if username == None:
+            return redirect(url_for('auth.login'))
+
+        item = login_table.query(KeyConditionExpression=Key(
+            'username').eq(username))['Items'][0]
+
+        if item['login'] == 0:
             return redirect(url_for('auth.login'))
         return f(*args, **kwargs)
     return decorated_function
@@ -40,7 +49,7 @@ def login_required(f):
 
 @bp.before_app_request
 def load_logged_in_user():
-    username = session.get('username')
+    username = request.cookies.get('username')
     if username is None:
         g.user = None
 
@@ -52,13 +61,25 @@ def _authenticate(username, password):
     assert username is not None, "invalid username"
     assert password is not None, "invalid password"
 
-    response = table.query(
+    response = events_table.query(
         KeyConditionExpression=Key('username').eq(
             username),
         FilterExpression=Attr('item_type').eq('account')
     )
 
     assert password == response['Items'][0]['password'], "invalid credential"
+
+
+def update_login_table(username, status):
+    login_table.update_item(
+        Key={
+            'username': username
+        },
+        UpdateExpression='SET login = :val1',
+        ExpressionAttributeValues={
+            ':val1': status
+        }
+    )
 
 
 @bp.route('/login', methods=['GET', 'POST'])
@@ -72,13 +93,11 @@ def login():
 
         _authenticate(username, password)
 
-        session.clear()
-        session.permanent = True
-
-        session['username'] = username
+        update_login_table(username, 1)
 
         return jsonify({
             'isSuccess': True,
+            'username': username,
             'url': url_for('index')
         })
 
@@ -112,7 +131,7 @@ def register():
         assert re.match(result_password, password)
         "Password should have 6 to 18 characters"
 
-        response = table.query(
+        response = events_table.query(
             KeyConditionExpression=Key('username').eq(username),
             # in order to test
             FilterExpression=Attr('item_type').eq('account')
@@ -125,7 +144,7 @@ def register():
             for photo in request.files.getlist("image"):
                 profile_image = save_image(username, photo)
 
-        response = table.put_item(
+        events_table.put_item(
             Item={
                 'username': username,
                 'start_time': int(datetime.utcnow().strftime("%s")),
@@ -134,6 +153,13 @@ def register():
                 'password': password,
                 'item_type': 'account',
                 'profile_image': profile_image,
+            }
+        )
+
+        login_table.put_item(
+            Item={
+                'username': username,
+                'login': 0
             }
         )
 
@@ -163,24 +189,16 @@ def save_image(username, image):
     return filename
 
 
-@bp.route('/logout', methods=['GET', 'POST'])
+@bp.route('/logout')
 @login_required
 def logout():
     """[summary] this endpoint accepts a POST request and logs out an user
     Returns:
         [type] -- [description] this endpoint returns json result
         {
-            isSuccess: boolean indecating if logout is successful,
+            isSuccess: boolean indicating if logout is successful,
             message: error message if applicable
         }
     """
-    try:
-        session.clear()
-        return jsonify({
-            "isSuccess": True
-        })
-    except:
-        return jsonify({
-            'isSuccess': False,
-            'message': 'Logout Failed'
-        })
+    update_login_table(request.cookies.get('username'), 0)
+    return redirect(url_for('auth.login'))

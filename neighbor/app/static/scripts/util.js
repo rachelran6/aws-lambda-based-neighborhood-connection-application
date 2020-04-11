@@ -4,19 +4,20 @@ logout = (url) => {
         type: "POST", 
         success: function(result) {
             if (result['isSuccess']) {
-                window.location.replace(response["url"])
+                localStorage.username = ""
+                window.location.replace(result['url']);
             }
-    }});
+        }
+    });
 }
 
 markEventOnMap = (geocoder, map, title, address, ) => {
     geocoder.geocode({'address': address}, (results, status) => {
         if (status === 'OK') {
-            map.setCenter(results[0].geometry.location);
             var marker = new google.maps.Marker({
                 map: map,
                 position: results[0].geometry.location,
-                title: "test"
+                title: title
             });
             var infowindow = new google.maps.InfoWindow();
             google.maps.event.addListener(marker, 'click', function() {

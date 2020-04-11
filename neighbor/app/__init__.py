@@ -111,11 +111,20 @@ def profile():
         KeyConditionExpression=Key('username').eq(username),
         FilterExpression=Attr('item_type').eq("participant")
     )
+    joined_events=[]
+    for i in joined_events_response['Items']:
+        joined_event = table.query(
+            IndexName="item_type_index",
+            KeyConditionExpression=Key('item_type').eq('host') & Key('start_time').eq(i['start_time'])
+        )
+        joined_events.append(joined_event['Items'][0])
+
     profile_response = table.query(
         IndexName="item_type_index",
         KeyConditionExpression=Key('item_type').eq('account'),
         FilterExpression=Attr('username').eq(username)
     )
+
     image_url = s3_client.generate_presigned_url('get_object',
                                                  Params={
                                                      'Bucket': BUCKET,
@@ -128,7 +137,7 @@ def profile():
         'number':  host_response['Items'][0]['phone_number'],
         'image_url': image_url,
         'hosted_events': hosted_events_response['Items'],
-        'joined_events': joined_events_response['Items']
+        'joined_events': joined_events#joined_events_response['Items']
     }
     urls = {
         'events': url_for('index'),
@@ -213,7 +222,7 @@ def messages():
                 'item_type': item_type,
                 'receiver': receiver,
             }
-        )    
+        )
     return render_template('messages.html',
                            username=username,
                            receiver=receiver,

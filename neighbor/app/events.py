@@ -7,7 +7,7 @@ from boto3.dynamodb.conditions import Attr, Key
 from botocore.exceptions import ClientError
 
 from flask import (Blueprint, flash, jsonify, redirect, render_template,
-                   request, session, url_for)
+                   request, url_for, g)
 
 import app
 
@@ -29,7 +29,7 @@ def events():
             response = table.query(
                 IndexName='item_type_index',
                 KeyConditionExpression=Key('item_type').eq('host'),
-                FilterExpression= Attr('is_active').eq(1)
+                FilterExpression=Attr('is_active').eq(1)
             )
             return json.dumps({
                 'isSuccess': True,
@@ -38,7 +38,7 @@ def events():
         if request.method == "POST":
             table.put_item(
                 Item={
-                    'username': session.get('username'),
+                    'username': g.user,
                     'start_time': int(datetime.fromisoformat(request.form['start_time']).timestamp()),
                     'end_time': int(datetime.fromisoformat(request.form['end_time']).timestamp()),
                     'title': request.form['title'],
@@ -64,16 +64,16 @@ def events():
 @login_required
 def join():
     try:
-        username = session.get('username')
+        username = g.user
         start_time = int(request.get_json()['start_time'])
         end_time = int(request.get_json()['end_time'])
         title = request.get_json()['title']
+        address = request.get_json()['address']
         response_host = table.query(
-            KeyConditionExpression=Key('username').eq(username))
-
+            KeyConditionExpression=Key('username').eq(username),
+            FilterExpression=Attr('item_type').eq('host') | Attr('item_type').eq('participant'))
         for i in response_host["Items"]:
-            if i['item_type'] != 'account' \
-                    and _is_conflict(int(i["start_time"]), int(i["end_time"]), start_time, end_time):
+            if _is_conflict(int(i["start_time"]), int(i["end_time"]), start_time, end_time):
                 return jsonify({
                     'isSuccess': False,
                     'message': 'you have a time conflict'
@@ -85,7 +85,8 @@ def join():
                 'start_time': start_time,
                 'end_time': end_time,
                 'item_type': 'participant',
-                'title': title
+                'title': title,
+                'address': address
             })
         return jsonify({
             'isSuccess': True
@@ -100,30 +101,48 @@ def join():
 @bp.route('/rate', methods=['POST'])
 @login_required
 def rate():
-    print('here')
-    username = request.form['username']
-    rating = int(request.form['rating'])
-    table.put_item(
-        Item={
-            'username': username,
-            'start_time': int(datetime.utcnow().strftime("%s")),
-            'item_type': 'rating',
-            'star': rating
-        })
-    return jsonify({
-        'isSuccess': True
-    })
+    try: 
+        username = request.form['username']
+        rating = int(request.form['rating'])
+        start_time = int(datetime.fromisoformat(request.form['start_time']).timestamp())
+        assert session.get('username')!=username, "You cannot rate yourself."
 
+        response = table.query(
+            KeyConditionExpression=Key('username').eq(session.get('username')) & Key('start_time').eq(start_time)
+        )
+        assert len(response['Items'])!=0, "You are not one of the participants of this event"
+
+        response = table.query(
+            KeyConditionExpression=Key('username').eq(username),
+            FilterExpression = Attr('rater').eq(session.get('username'))
+        )
+        assert len(response['Items'])==0, "You have already rated this host"
+
+        table.put_item(
+            Item={
+                'username': username,
+                'start_time': int(datetime.utcnow().strftime("%s")),
+                'item_type': 'rating',
+                'rater':session.get('username'),
+                'star': rating
+            })
+        return jsonify({
+            'isSuccess': True
+        })
+    except AssertionError as e:
+        return jsonify({
+            'isSuccess': False,
+            'message': e.args
+        })
 
 @bp.route('/dropout', methods=['DELETE'])
 @login_required
 def dropout():
-    print("dropped out function")
 
     try:
         table.delete_item(
             Key={
-                'username': session.get('username'),
+                'username': g.user,
                 'start_time': request.get_json()['start_time']
             })
         return jsonify({

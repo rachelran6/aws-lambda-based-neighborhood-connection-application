@@ -34,8 +34,8 @@
                 <a class="nav-link" href="{{urls['profile']}}">Profile</a>
             </li>
             </ul>
-            <form class="form-inline my-2 my-lg-0">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Logout</button>
+            <form class="form-inline my-2 my-lg-0" action="{{url_for('auth.logout')}}">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit" id="logoutButton" >Logout</button>
             </form>
         </div>
         </nav>
@@ -44,12 +44,12 @@
                 <div class="row" style="height:550px;">
                     <div id="map" class="col-md-6 maps"></div>
                     <div class="col-md-6">
-                        <h2 class="text-uppercase mt-3 font-weight-bold text-white">Event Detial</h2>
+                        <h2 class="text-uppercase mt-3 font-weight-bold text-white">Event Detail</h2>
                         <form action="">
                         <div class="row">
                             <div class="col-12">
                                 <div class="form-group">
-                                    <p3 id='title'>Title: {{event['title']}}</p3>
+                                    <p3>Title: {{event['title']}}</p3>
                                 </div>
                             </div>
                             <div class="col-lg-6">
@@ -130,6 +130,7 @@
                                             </div>
                                             <div class="form-group">
                                                 <input type="hidden" name='username' value="{{event['username']}}">
+                                                <input type="hidden" name='start_time' value="{{event['start_time']}}">
                                             </div>
                                             
                                             <div class="modal-footer">
@@ -175,7 +176,8 @@
                     'start_time': document.getElementById('start_time').value,
                     'end_time': document.getElementById('end_time').value,
                     'username': document.getElementById('username').value,
-                    'title': document.getElementById('title').value
+                    'title': document.getElementById('title').value,
+                    'address': document.getElementById('address').innerHTML
                 }),
                 dataType: "json",
                 contentType: "application/json; charset=utf-8",
@@ -192,9 +194,6 @@
             $("#joinEventButton").click(function(){
                 joinEvent()
             })
-            $("#logoutButton").click(function(){
-                logout("{{url_for('auth.logout')}}")
-            });
             $('#eventRateFrom')
             .ajaxForm({
                 url : "{{url_for('events.rate')}}",
@@ -212,9 +211,7 @@
             document.getElementById('address').innerText)
         });
     </script>
-    
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDbhbcq9vDMMwwl2LG7DE5PQK5Os-hbgSw&callback=initMap"
-    async defer></script>
+
     <style>
         #contatti{
         background-color: #70c3be;
@@ -270,5 +267,6 @@
             padding: 5px;
         }
     </style>
-
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDbhbcq9vDMMwwl2LG7DE5PQK5Os-hbgSw&callback=initMap"
+    async defer></script>
 </html>
