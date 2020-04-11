@@ -101,14 +101,28 @@ def join():
 @bp.route('/rate', methods=['POST'])
 @login_required
 def rate():
-    print('here')
     username = request.form['username']
     rating = int(request.form['rating'])
+    start_time = int(datetime.fromisoformat(request.form['start_time']).timestamp())
+    assert session.get('username')!=username, "You cannot rate yourself."
+
+    response = table.query(
+        KeyConditionExpression=Key('username').eq(session.get('username')) & Key('start_time').eq(start_time)
+    )
+    assert len(response['Items'])!=0, "You are not one of the participants of this event"
+
+    response = table.query(
+        KeyConditionExpression=Key('username').eq(username),
+        FilterExpression = Attr('rater').eq(session.get('username'))
+    )
+    assert len(response['Items'])==0, "You have already rated this host"
+
     table.put_item(
         Item={
             'username': username,
             'start_time': int(datetime.utcnow().strftime("%s")),
             'item_type': 'rating',
+            'rater':session.get('username'),
             'star': rating
         })
     return jsonify({
