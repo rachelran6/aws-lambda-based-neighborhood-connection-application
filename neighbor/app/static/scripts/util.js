@@ -4,11 +4,9 @@ logout = (url) => {
         type: "POST", 
         success: function(result) {
             if (result['isSuccess']) {
-                window.location.replace('/dev/login');
+                localStorage.username = ""
+                window.location.replace(result['url']);
             }
-        },
-        error: function() {
-            alert('logout failed');
         }
     });
 }
@@ -16,7 +14,6 @@ logout = (url) => {
 markEventOnMap = (geocoder, map, title, address, ) => {
     geocoder.geocode({'address': address}, (results, status) => {
         if (status === 'OK') {
-            map.setCenter(results[0].geometry.location);
             var marker = new google.maps.Marker({
                 map: map,
                 position: results[0].geometry.location,

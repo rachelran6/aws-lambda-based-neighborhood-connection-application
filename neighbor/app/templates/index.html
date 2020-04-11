@@ -42,8 +42,8 @@
                   New event
                 </button>
                 <pre>  </pre>
-                <form class="form-inline my-2 my-lg-0">
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit" id="logoutButton">Logout</button>
+                <form class="form-inline my-2 my-lg-0" action="{{url_for('auth.logout')}}">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit" id="logoutButton" >Logout</button>
                 </form>
             </div>
         </nav>
@@ -182,7 +182,10 @@
 
       $(document).ready(function(){
         $.ajax({
-          url: window.location.href + "/events", 
+          url: "{{url_for('events.events')}}",
+          data:{
+            username: localStorage.username
+          },
           type: "GET", 
           success: function(result) {
               var response = JSON.parse(result);
@@ -204,9 +207,9 @@
                     }
                 }
             });
-        $("#logoutButton").click(function(){
-          logout("{{url_for('auth.logout')}}")
-        });
+        // $("#logoutButton").click(function(){
+        //   logout("{{url_for('auth.logout')}}")
+        // });
 
       });
     </script>
