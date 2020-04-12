@@ -69,13 +69,15 @@ def join():
         end_time = int(request.get_json()['end_time'])
         title = request.get_json()['title']
         address = request.get_json()['address']
-        required_parti_num = request.get_json()['required_parti_num']
+        required_parti_num = request.get_json()['required_participant_count']
 
         response_participants = table.query(
-            KeyConditionExpression=Key('start_time').eq(start_time),
-            FilterExpression=Attr('item_type').eq('participant') & Attr('title').eq('title')
+            IndexName='item_type_index',
+            KeyConditionExpression=Key('item_type').eq('participant')&Key('start_time').eq(start_time),
+            FilterExpression= Attr('title').eq(title)
         )
-        assert len(response_participants['Items'])<required_parti_num, "This event is full"
+
+        assert len(response_participants['Items'])<int(required_parti_num), "This event is full"
 
         response_host = table.query(
             KeyConditionExpression=Key('username').eq(username),
@@ -100,6 +102,11 @@ def join():
             'isSuccess': True
         })
     except ClientError as e:
+        return jsonify({
+            'isSuccess': False,
+            'message': e.args
+        })
+    except AssertionError as e:
         return jsonify({
             'isSuccess': False,
             'message': e.args
