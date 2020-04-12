@@ -72,7 +72,7 @@
                                     <tbody>
                                         {% for event in profile['hosted_events']%}
                                             <tr>
-                                            <th scope="row">{{event['title']}}</th>
+                                            <th scope="row"><a href=event?username={{event['username']}}&timestamp={{ event['start_time']}}>{{event['title']}}</a></th>
                                             <td>{{ show_time(event['start_time'])}}</td>
                                             <td>{{ show_time(event['end_time'])}}</td>
                                             <td>{{event['address']}}</td>
@@ -117,15 +117,12 @@
             $("#logoutButton").click(function(){
                 logout("{{url_for('auth.logout')}}")
             });
-            $("#dropOutButton").click(function(){
-                dropout()
-            })
         });
 
         dropout = (start_time) => {
             $.ajax({
                 type: 'DELETE',
-                url: "/events/dropout",
+                url: "{{url_for('events.dropout')}}",
                 data: JSON.stringify({
                     'start_time': start_time,
                 }),

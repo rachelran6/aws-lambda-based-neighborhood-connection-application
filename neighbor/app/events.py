@@ -157,12 +157,12 @@ def rate():
 @bp.route('/dropout', methods=['DELETE'])
 @login_required
 def dropout():
-
     try:
+        print(request.get_json())
         table.delete_item(
             Key={
                 'username': g.user,
-                'start_time': request.get_json()['start_time']
+                'start_time': int(request.get_json()['start_time'])
             })
         return jsonify({
             'isSuccess': True
