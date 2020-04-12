@@ -66,6 +66,7 @@ def _authenticate(username, password):
         FilterExpression=Attr('item_type').eq('account')
     )
 
+    assert len(response['Items']) == 1, 'invalid credential'
     assert password == response['Items'][0]['password'], "invalid credential"
 
 
