@@ -1,9 +1,5 @@
 # ece1779-a3
 
-## Group members
-* Hongyu Liu 1005851295   
-* Ran Wang 1006126951   
-* Zixiang Ma 1005597285  
 
 ## Description of the application
 This application intends to help people deepen their connections with others in the neighborhood. Sometimes, we want to play basketball while there's no teammates. People who feel lonely in the neighborhood may need company for a walk or a meal. Research has shown that loneliness is found throughout society, including among people in marriages along with other strong relationships, and those with successful careers. Therefore, this application aims to create opportunities for people in the neighborhood to connect with each other and have fun during the activities.
