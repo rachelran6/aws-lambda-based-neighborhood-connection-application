@@ -34,7 +34,6 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         username = request.cookies.get('username')
-        print(username)
         if username == None:
             return redirect(url_for('auth.login'))
 
@@ -67,6 +66,7 @@ def _authenticate(username, password):
         FilterExpression=Attr('item_type').eq('account')
     )
 
+    assert len(response['Items']) == 1, 'invalid credential'
     assert password == response['Items'][0]['password'], "invalid credential"
 
 

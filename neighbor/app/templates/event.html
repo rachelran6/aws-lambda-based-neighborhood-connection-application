@@ -132,6 +132,7 @@
                                                 <input type="hidden" name='username' value="{{event['username']}}">
                                                 <input type="hidden" name='start_time' value="{{event['start_time']}}">
                                                 <input type="hidden" name='title' value="{{event['title']}}">
+                                                <input type="hidden" name='required_participant_count' value="{{event['required_participant_count']}}">
                                             </div>
                                             
                                             <div class="modal-footer">
@@ -159,8 +160,11 @@
             <input id="start_time" type="hidden" value="{{event['start_time_int']}}">
             <input id="end_time" type="hidden" value="{{event['end_time_int']}}">
             <input id="title" type="hidden" value="{{event['title']}}">
+            <input id='required_participant_count' value="{{event['required_participant_count']}}">
         </div>
     </body>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDbhbcq9vDMMwwl2LG7DE5PQK5Os-hbgSw&callback=initMap"
+    async defer></script>
     <script>
         var map;
         function initMap() {
@@ -178,6 +182,7 @@
                     'end_time': document.getElementById('end_time').value,
                     'username': document.getElementById('username').value,
                     'title': document.getElementById('title').value,
+                    'required_participant_count':document.getElementById('required_participant_count').value,
                     'address': document.getElementById('address').innerHTML
                 }),
                 dataType: "json",
@@ -274,6 +279,4 @@
             color: rgb(10, 0, 0);
         }
     </style>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDbhbcq9vDMMwwl2LG7DE5PQK5Os-hbgSw&callback=initMap"
-    async defer></script>
 </html>

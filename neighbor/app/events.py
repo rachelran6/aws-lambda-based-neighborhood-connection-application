@@ -69,6 +69,16 @@ def join():
         end_time = int(request.get_json()['end_time'])
         title = request.get_json()['title']
         address = request.get_json()['address']
+        required_parti_num = request.get_json()['required_participant_count']
+
+        response_participants = table.query(
+            IndexName='item_type_index',
+            KeyConditionExpression=Key('item_type').eq('participant')&Key('start_time').eq(start_time),
+            FilterExpression= Attr('title').eq(title)
+        )
+
+        assert len(response_participants['Items'])<int(required_parti_num), "This event is full"
+
         response_host = table.query(
             KeyConditionExpression=Key('username').eq(username),
             FilterExpression=Attr('item_type').eq('host') | Attr('item_type').eq('participant'))
@@ -92,6 +102,11 @@ def join():
             'isSuccess': True
         })
     except ClientError as e:
+        return jsonify({
+            'isSuccess': False,
+            'message': e.args
+        })
+    except AssertionError as e:
         return jsonify({
             'isSuccess': False,
             'message': e.args
@@ -142,12 +157,12 @@ def rate():
 @bp.route('/dropout', methods=['DELETE'])
 @login_required
 def dropout():
-
     try:
+        print(request.get_json())
         table.delete_item(
             Key={
                 'username': g.user,
-                'start_time': request.get_json()['start_time']
+                'start_time': int(request.get_json()['start_time'])
             })
         return jsonify({
             'isSuccess': True

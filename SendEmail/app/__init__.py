@@ -27,7 +27,7 @@ def send_email(recipients, start_time, title):
 
     with app.app_context():
         start_time = datetime.fromtimestamp(start_time)
-        body = "Hello,\n Your event {} is schedule at {}".format(title, start_time)
+        body = "Hello,\nYour event {} is scheduled at {}".format(title, start_time)
         msg = Message("Event Notification",
                       body=body,
                       sender=("Your Neighborhood", "neighborhood.notification@gmail.com"),
@@ -45,7 +45,8 @@ if len(event_response['Items'])!=0:
     for i in event_response['Items']:
         if current_timestamp<int(i["start_time"])<current_timestamp+ 60*60 :
             host_response = table.query(
-                KeyConditionExpression=Key('username').eq(i["username"]) & Key('start_time').lt(0)
+                KeyConditionExpression=Key('username').eq(i["username"]),
+                FilterExpression=Attr('item_type').eq('account')
             )
             recipients=[]
             print(host_response)
@@ -58,7 +59,8 @@ if len(event_response['Items'])!=0:
             )
             for participant in group_response['Items']:
                 participant_response = table.query(
-                    KeyConditionExpression=Key('username').eq(participant["username"])& Key('start_time').lt(0)
+                    KeyConditionExpression=Key('username').eq(participant["username"]),
+                    FilterExpression=Attr('item_type').eq('account')
                 )
 
                 for parti in participant_response['Items']:
